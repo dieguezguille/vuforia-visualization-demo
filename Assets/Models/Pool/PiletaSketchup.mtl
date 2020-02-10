@@ -1,0 +1,49 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl BackColor
+Ka 0.000000 0.000000 0.000000
+Kd 0.643137 0.698039 0.733333
+Ks 0.330000 0.330000 0.330000
+
+newmtl Pavers_Modular_Brick
+Ka 0.000000 0.000000 0.000000
+Kd 0.686275 0.560784 0.505882
+Ks 0.330000 0.330000 0.330000
+map_Kd PiletaSketchup/Pavers_Modular_Brick.jpg
+
+newmtl Square_Glass_Tile_01
+Ka 0.000000 0.000000 0.000000
+Kd 0.482353 0.556863 0.592157
+Ks 0.330000 0.330000 0.330000
+map_Kd PiletaSketchup/Square_Glass_Tile_01.jpg
+
+newmtl Polished_Concrete_Old
+Ka 0.000000 0.000000 0.000000
+Kd 0.898039 0.898039 0.898039
+Ks 0.330000 0.330000 0.330000
+map_Kd PiletaSketchup/Polished_Concrete_Old.jpg
+
+newmtl Polished_Concrete_New
+Ka 0.000000 0.000000 0.000000
+Kd 0.784314 0.784314 0.796078
+Ks 0.330000 0.330000 0.330000
+map_Kd PiletaSketchup/Polished_Concrete_New.jpg
+
+newmtl Vegetation_Honey_Locust
+Ka 0.000000 0.000000 0.000000
+Kd 0.337255 0.568627 0.098039
+Ks 0.330000 0.330000 0.330000
+map_Kd PiletaSketchup/Vegetation_Honey_Locust.jpg
+
+newmtl ForegroundColor
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.330000 0.330000 0.330000
+
