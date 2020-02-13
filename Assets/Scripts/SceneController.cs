@@ -1,7 +1,6 @@
 ﻿using Lean.Touch;
 using UnityEngine;
 using UnityEngine.UI;
-using Vuforia;
 
 public class SceneController : MonoBehaviour
 {
