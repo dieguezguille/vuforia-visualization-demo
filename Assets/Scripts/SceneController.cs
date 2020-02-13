@@ -1,5 +1,4 @@
 ﻿using Lean.Touch;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Vuforia;
@@ -97,7 +96,7 @@ public class SceneController : MonoBehaviour
 	public void ProcessHitTestResult(HitTestResult result)
 	{
 		HideSurfaceLoading();
-		ShowTapScreenToolTip();
+		ShowCatalogButton();
 	}
 
 	public void ShowCatalogButton()
