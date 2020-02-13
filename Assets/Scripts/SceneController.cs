@@ -7,9 +7,18 @@ public class SceneController : MonoBehaviour
 {
 	public Text debugText;
 
+	// INTERNAL
 	private GameObject previousItem;
 	private GameObject currentItem;
+
+	// CONTROLLERS
 	private ModelController modelController;
+
+	// UI CONTROLS
+	private GameObject loading;
+	private GameObject toolTip;
+	private GameObject controls;
+	private GameObject catalog;
 
 	public GameObject CurrentItem
 	{
@@ -31,6 +40,10 @@ public class SceneController : MonoBehaviour
 	private void Start()
 	{
 		modelController = GameObject.Find("ModelController").GetComponent<ModelController>();
+		loading = GameObject.Find("Loading");
+		toolTip = GameObject.Find("TapScreenToolTip");
+		controls = GameObject.Find("Controls");
+		catalog = GameObject.Find("Catalog");
 	}
 
 	public void InitializeDefaultScene()
@@ -41,32 +54,48 @@ public class SceneController : MonoBehaviour
 
 	public void ShowSurfaceLoading()
 	{
-		var loading = GameObject.Find("Loading");
 		loading.GetComponent<Animator>().SetBool("isLoading", true);
 	}
 
 	public void HideSurfaceLoading()
 	{
-		var loading = GameObject.Find("Loading");
 		loading.GetComponent<Animator>().SetBool("isLoading", false);
 	}
 
 	public void ShowTapScreenToolTip()
 	{
-		var tooltip = GameObject.Find("TapScreenToolTip");
-		tooltip.GetComponent<Animator>().SetBool("isShown", true);
+		toolTip.GetComponent<Animator>().SetBool("isShown", true);
 	}
 
 	public void HideTapScreenToolTip()
 	{
-		var tooltip = GameObject.Find("TapScreenToolTip");
-		tooltip.GetComponent<Animator>().SetBool("isShown", false);
+		toolTip.GetComponent<Animator>().SetBool("isShown", false);
 	}
 
 	public void OpenControls()
 	{
-		var controls = GameObject.Find("Controls");
-		controls.GetComponent<Animator>().SetBool("isMenuOpen", true);
+		controls.GetComponent<Animator>().SetBool("isShown", true);
+	}
+
+	public void CloseControls()
+	{
+		controls.GetComponent<Animator>().SetBool("isShown", false);
+	}
+
+	public void OpenCatalog()
+	{
+		catalog.GetComponent<Animator>().SetBool("isMenuOpen", true);
+	}
+
+	public void CloseCatalog()
+	{
+		catalog.GetComponent<Animator>().SetBool("isMenuOpen", false);
+	}
+
+	public void ShowCatalogButton()
+	{
+		var catalogButton = GameObject.Find("OpenCatalogButton");
+		catalogButton.GetComponent<Animator>().SetBool("isMenuOpen", true);
 	}
 
 	public void FinishEditing()
@@ -81,28 +110,10 @@ public class SceneController : MonoBehaviour
 		CloseControls();
 	}
 
-	public void OpenCatalog()
-	{
-		var catalog = GameObject.Find("Catalog");
-		catalog.GetComponent<Animator>().SetBool("isMenuOpen", true);
-	}
-
-	public void CloseCatalog()
-	{
-		var catalog = GameObject.Find("Catalog");
-		catalog.GetComponent<Animator>().SetBool("isMenuOpen", false);
-	}
-
-	public void ProcessHitTestResult(HitTestResult result)
+	public void ProcessHitTestResult()
 	{
 		HideSurfaceLoading();
 		ShowCatalogButton();
-	}
-
-	public void ShowCatalogButton()
-	{
-		var catalogButton = GameObject.Find("OpenCatalogButton");
-		catalogButton.GetComponent<Animator>().SetBool("isMenuOpen", true);
 	}
 
 	public void OnCatalogItemClicked(string prefabName)
@@ -139,11 +150,5 @@ public class SceneController : MonoBehaviour
 
 		// override position controls
 		modelController.model = CurrentItem;
-	}
-
-	private void CloseControls()
-	{
-		var controls = GameObject.Find("Controls");
-		controls.GetComponent<Animator>().SetBool("isMenuOpen", false);
 	}
 }
