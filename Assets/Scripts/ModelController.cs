@@ -33,4 +33,14 @@ public class ModelController : MonoBehaviour
 	{
 		directionalLight.intensity -= 0.1f;
 	}
+
+	public void OnPlusHeightButtonPressed()
+	{
+		model.transform.localPosition = new Vector3(model.transform.localPosition.x, model.transform.localPosition.y + 0.05f, model.transform.localPosition.z);
+	}
+
+	public void OnMinusHeightButtonPressed()
+	{
+		model.transform.localPosition = new Vector3(model.transform.localPosition.x, model.transform.localPosition.y - 0.05f, model.transform.localPosition.z);
+	}
 }
