@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class SceneController : MonoBehaviour
 {
+	// UI
 	public Text debugText;
 
 	// INTERNAL
@@ -43,6 +44,24 @@ public class SceneController : MonoBehaviour
 		toolTip = GameObject.Find("TapScreenToolTip");
 		controls = GameObject.Find("Controls");
 		catalog = GameObject.Find("Catalog");
+	}
+
+	private void Update()
+	{
+		// check touch raycasts
+		if ((Input.GetTouch(0).phase == TouchPhase.Stationary) || (Input.GetTouch(0).phase == TouchPhase.Moved && Input.GetTouch(0).deltaPosition.magnitude < 1.2f))
+		{
+			Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit))
+			{
+				debugText.text = hit.transform.name;
+			}
+			else
+			{
+				debugText.text = "";
+			}
+		}
 	}
 
 	public void InitializeDefaultScene()
