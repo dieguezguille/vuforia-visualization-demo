@@ -1,4 +1,5 @@
 ﻿using Lean.Touch;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,7 @@ public class SceneController : MonoBehaviour
 {
 	// UI
 	public Text debugText;
+	public Camera arCamera;
 
 	// INTERNAL
 	private GameObject previousItem;
@@ -51,17 +53,24 @@ public class SceneController : MonoBehaviour
 		// check touch raycasts
 		if ((Input.GetTouch(0).phase == TouchPhase.Stationary) || (Input.GetTouch(0).phase == TouchPhase.Moved && Input.GetTouch(0).deltaPosition.magnitude < 1.2f))
 		{
-			Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit))
+			Ray ray = arCamera.ScreenPointToRay(Input.GetTouch(0).position);
+			RaycastHit hitInfo;
+			if (Physics.Raycast(ray, out hitInfo))
 			{
-				debugText.text = hit.transform.name;
+				// distancia entre la cámara y el objeto con el que colisiona el hit del raycast
+				debugText.text = $"{Math.Round(hitInfo.distance, 2, MidpointRounding.AwayFromZero).ToString()} meters.";
 			}
 			else
 			{
 				debugText.text = "";
 			}
 		}
+	}
+
+	public void OnContentPlaced()
+	{
+		debugText.text = "CONTENT PLACED!";
+		toolTip.SetActive(false);
 	}
 
 	public void InitializeDefaultScene()
@@ -128,6 +137,7 @@ public class SceneController : MonoBehaviour
 	{
 		HideSurfaceLoading();
 		ShowCatalogButton();
+		ShowTapScreenToolTip();
 	}
 
 	public void OnCatalogItemClicked(string prefabName)
