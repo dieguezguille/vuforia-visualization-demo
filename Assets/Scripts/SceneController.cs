@@ -127,7 +127,7 @@ public class SceneController : MonoBehaviour
 
 	private void DisableStagePlacement()
 	{
-		planeFinder.GetComponent<ContentPositioningBehaviour>().enabled = false;
+		planeFinder.GetComponent<ContentPositioningBehaviour>().AnchorStage = null;
 	}
 
 	public void EnableMeasureMode()
@@ -319,14 +319,7 @@ public class SceneController : MonoBehaviour
 		try
 		{
 			CurrentItem.transform.parent = groundPlane.transform;
-
-			// TODO ubicar el item instanciado exactamente sobre el ground plane indicator (ground plane position?)
-
-			var pos = groundPlane.transform.localPosition;
 			CurrentItem.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
-
-			debugText.text = CurrentItem.transform.position.ToString();
-
 			CurrentItem.transform.localScale = CurrentItem.transform.lossyScale;
 
 			if (previousItem != null)
