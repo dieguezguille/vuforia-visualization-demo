@@ -69,24 +69,20 @@ public class SceneController : MonoBehaviour
 
 	private void Update()
 	{
-		// check touch raycasts
-		//if ((Input.GetTouch(0).phase == TouchPhase.Stationary) || (Input.GetTouch(0).phase == TouchPhase.Moved && Input.GetTouch(0).deltaPosition.magnitude < 1.2f))
-		//{
-		//	Ray ray = arCamera.ScreenPointToRay(Input.GetTouch(0).position);
-		//	RaycastHit hitInfo;
-		//	if (Physics.Raycast(ray, out hitInfo))
-		//	{
-		//		// distancia entre la cámara y el objeto con el que colisiona el hit del raycast
-		//		debugText.text = $"{Math.Round(hitInfo.distance, 2, MidpointRounding.AwayFromZero).ToString()} meters.";
-		//	}
-		//	else
-		//	{
-		//		debugText.text = "";
-		//	}
-		//}
-
-		Ray ray = arCamera.ScreenPointToRay(arCamera.transform.rotation.eulerAngles);
-		Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
+		if ((Input.GetTouch(0).phase == TouchPhase.Stationary) || (Input.GetTouch(0).phase == TouchPhase.Moved && Input.GetTouch(0).deltaPosition.magnitude < 1.2f))
+		{
+			Ray ray = arCamera.ScreenPointToRay(arCamera.transform.rotation.eulerAngles);
+			RaycastHit hitInfo;
+			if (Physics.Raycast(ray, out hitInfo))
+			{
+				// distancia entre la cámara y el objeto con el que colisiona el hit del raycast
+				debugText.text = $"{Math.Round(hitInfo.distance, 2, MidpointRounding.AwayFromZero).ToString()} meters.";
+			}
+			else
+			{
+				debugText.text = "";
+			}
+		}
 
 		if (isMeasureModeEnabled)
 		{
@@ -100,7 +96,7 @@ public class SceneController : MonoBehaviour
 		GameObject prefab = Resources.Load($"Prefabs/Bandera") as GameObject;
 		CurrentItem = Instantiate(prefab);
 
-		debugText.text = $"Instantiated marker! // {groundPlane.transform.childCount} elementos en total";
+		debugText.text = $"{groundPlane.transform.childCount} elementos en total";
 	}
 
 	IEnumerator LoadMeasureSceneAsync()
@@ -121,11 +117,17 @@ public class SceneController : MonoBehaviour
 			toolTip.SetActive(false);
 			ShowCatalogButton();
 			ShowStartMeasureButton();
+			DisableStagePlacement();
 		}
 		catch (Exception ex)
 		{
 			//debugText.text = ex.Message;
 		}
+	}
+
+	private void DisableStagePlacement()
+	{
+		planeFinder.GetComponent<ContentPositioningBehaviour>().enabled = false;
 	}
 
 	public void EnableMeasureMode()
@@ -321,7 +323,9 @@ public class SceneController : MonoBehaviour
 			// TODO ubicar el item instanciado exactamente sobre el ground plane indicator (ground plane position?)
 
 			var pos = groundPlane.transform.localPosition;
-			CurrentItem.transform.localPosition = new Vector3(0, 0, 0);
+			CurrentItem.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
+
+			debugText.text = CurrentItem.transform.position.ToString();
 
 			CurrentItem.transform.localScale = CurrentItem.transform.lossyScale;
 
@@ -333,6 +337,7 @@ public class SceneController : MonoBehaviour
 
 			CurrentItem.AddComponent<LeanPinchScale>();
 			CurrentItem.AddComponent<LeanTwistRotateAxis>();
+
 			modelController.model = CurrentItem;
 		}
 		catch (Exception ex)
