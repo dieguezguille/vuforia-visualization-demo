@@ -59,6 +59,11 @@ namespace Assets.Scripts.Controllers
 			catch (Exception) { }
 		}
 
+		public void ResetScene()
+		{
+			SceneManager.LoadScene("CatalogScene", LoadSceneMode.Single);
+		}
+
 		public void GoMainMenu()
 		{
 			SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);

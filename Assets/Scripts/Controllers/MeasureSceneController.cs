@@ -60,6 +60,11 @@ namespace Assets.Scripts.Controllers
 			}
 		}
 
+		public void ResetScene()
+		{
+			SceneManager.LoadScene("MeasureScene", LoadSceneMode.Single);
+		}
+
 		public void GoMainMenu()
 		{
 			SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
