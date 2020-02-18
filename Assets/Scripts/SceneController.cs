@@ -1,6 +1,7 @@
 ﻿using Lean.Touch;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -49,6 +50,8 @@ public class SceneController : MonoBehaviour
 		}
 	}
 
+	public List<GameObject> ARMarkerList { get; set; }
+
 	private void Start()
 	{
 		try
@@ -60,6 +63,8 @@ public class SceneController : MonoBehaviour
 			catalog = GameObject.Find("Catalog");
 			groundPlane = GameObject.Find("Ground Plane Stage");
 			planeFinder = GameObject.Find("Plane Finder");
+
+			ARMarkerList = new List<GameObject>();
 		}
 		catch (Exception ex)
 		{
@@ -69,25 +74,15 @@ public class SceneController : MonoBehaviour
 
 	private void Update()
 	{
-		if ((Input.GetTouch(0).phase == TouchPhase.Stationary) || (Input.GetTouch(0).phase == TouchPhase.Moved && Input.GetTouch(0).deltaPosition.magnitude < 1.2f))
-		{
-			Ray ray = arCamera.ScreenPointToRay(arCamera.transform.rotation.eulerAngles);
-			RaycastHit hitInfo;
-			if (Physics.Raycast(ray, out hitInfo))
-			{
-				// distancia entre la cámara y el objeto con el que colisiona el hit del raycast
-				debugText.text = $"{Math.Round(hitInfo.distance, 2, MidpointRounding.AwayFromZero).ToString()} meters.";
-			}
-			else
-			{
-				debugText.text = "";
-			}
-		}
-
 		if (isMeasureModeEnabled)
 		{
-			// use a coroutine to load the Scene in the background
 			StartCoroutine(LoadMeasureSceneAsync());
+		}
+
+		if (ARMarkerList != null && ARMarkerList.Count > 1)
+		{
+			var distance = Vector3.Distance(CurrentItem.transform.position, previousItem.transform.position);
+			debugText.text = distance.ToString();
 		}
 	}
 
@@ -95,8 +90,8 @@ public class SceneController : MonoBehaviour
 	{
 		GameObject prefab = Resources.Load($"Prefabs/Bandera") as GameObject;
 		CurrentItem = Instantiate(prefab);
-
-		debugText.text = $"{groundPlane.transform.childCount} elementos en total";
+		ARMarkerList.Add(CurrentItem);
+		debugText.text = $"There are {groundPlane.transform.childCount - 1} markers in total.";
 	}
 
 	IEnumerator LoadMeasureSceneAsync()
@@ -113,7 +108,7 @@ public class SceneController : MonoBehaviour
 	{
 		try
 		{
-			debugText.text = "CONTENT PLACED!";
+			debugText.text = "Stage deployed succesfully.";
 			toolTip.SetActive(false);
 			ShowCatalogButton();
 			ShowStartMeasureButton();
@@ -305,7 +300,6 @@ public class SceneController : MonoBehaviour
 		{
 			GameObject prefab = Resources.Load($"Prefabs/{prefabName}") as GameObject;
 			CurrentItem = Instantiate(prefab);
-
 			GameObject.Find("ToolTip").GetComponent<Animator>().SetTrigger("ShouldShow");
 		}
 		catch (Exception ex)
