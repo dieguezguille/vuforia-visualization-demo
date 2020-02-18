@@ -34,6 +34,7 @@ namespace Assets.Scripts.Controllers
 				previousItem = currentItem;
 				currentItem = value;
 				SetUpCurrentItem();
+				CalculateDistance();
 			}
 		}
 
@@ -49,15 +50,6 @@ namespace Assets.Scripts.Controllers
 				ARMarkerList = new List<GameObject>();
 			}
 			catch (Exception ex) { }
-		}
-
-		void Update()
-		{
-			if (ARMarkerList != null && ARMarkerList.Count > 1)
-			{
-				var distance = Vector3.Distance(CurrentItem.transform.position, previousItem.transform.position);
-				debugText.text = distance.ToString();
-			}
 		}
 
 		public void ResetScene()
@@ -107,6 +99,15 @@ namespace Assets.Scripts.Controllers
 				ShowTapScreenToolTip();
 			}
 			catch (Exception) { }
+		}
+
+		private void CalculateDistance()
+		{
+			if (ARMarkerList != null && ARMarkerList.Count > 1)
+			{
+				var distance = Vector3.Distance(CurrentItem.transform.position, previousItem.transform.position);
+				debugText.text = distance.ToString();
+			}
 		}
 
 		private void DisableStagePlacement()
