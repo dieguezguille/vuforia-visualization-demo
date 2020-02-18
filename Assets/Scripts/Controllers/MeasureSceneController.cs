@@ -34,7 +34,6 @@ namespace Assets.Scripts.Controllers
 				previousItem = currentItem;
 				currentItem = value;
 				SetUpCurrentItem();
-				CalculateDistance();
 			}
 		}
 
@@ -52,6 +51,14 @@ namespace Assets.Scripts.Controllers
 			catch (Exception ex) { }
 		}
 
+		void Update()
+		{
+			if (ARMarkerList != null && ARMarkerList.Count > 1)
+			{
+				CalculateDistance();
+			}
+		}
+
 		public void ResetScene()
 		{
 			SceneManager.LoadScene("MeasureScene", LoadSceneMode.Single);
@@ -65,8 +72,8 @@ namespace Assets.Scripts.Controllers
 		public void InstantiateMarker()
 		{
 			GameObject prefab = Resources.Load($"Prefabs/Bandera") as GameObject;
-			CurrentItem = Instantiate(prefab);
 			ARMarkerList.Add(CurrentItem);
+			CurrentItem = Instantiate(prefab);
 			debugText.text = $"There are {groundPlane.transform.childCount - 1} markers in total.";
 		}
 
@@ -103,10 +110,15 @@ namespace Assets.Scripts.Controllers
 
 		private void CalculateDistance()
 		{
-			if (ARMarkerList != null && ARMarkerList.Count > 1)
+			var distance = Vector3.Distance(CurrentItem.transform.position, previousItem.transform.position);
+
+			if (distance > 1)
 			{
-				var distance = Vector3.Distance(CurrentItem.transform.position, previousItem.transform.position);
-				debugText.text = distance.ToString();
+				debugText.text = $"Distance: {Math.Round(distance, 2)} meters.";
+			}
+			else
+			{
+				debugText.text = $"Distance: {Math.Round(distance, 2) * 100} centimeters.";
 			}
 		}
 
