@@ -1734,7 +1734,7 @@ MonoBehaviour:
   OnAutomaticHitTest:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 941251481}
         m_MethodName: ProcessHitTestResult
         m_Mode: 0
         m_Arguments:
