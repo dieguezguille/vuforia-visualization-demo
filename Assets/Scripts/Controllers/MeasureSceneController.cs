@@ -20,6 +20,7 @@ namespace Assets.Scripts.Controllers
 		private GameObject previousItem;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
+		private LineRenderer measureLine;
 
 		public List<GameObject> ARMarkerList { get; set; }
 
@@ -45,7 +46,7 @@ namespace Assets.Scripts.Controllers
 				toolTip = GameObject.Find("TapScreenToolTip");
 				groundPlane = GameObject.Find("Ground Plane Stage");
 				planeFinder = GameObject.Find("Plane Finder");
-
+				measureLine = GameObject.Find("MeasureLine").GetComponent<LineRenderer>();
 				ARMarkerList = new List<GameObject>();
 			}
 			catch (Exception ex) { }
@@ -120,6 +121,10 @@ namespace Assets.Scripts.Controllers
 			{
 				debugText.text = $"Distance: {Math.Round(distance, 2) * 100} centimeters.";
 			}
+
+			// create line between the 2 markers
+			measureLine.SetPosition(0, CurrentItem.transform.position);
+			measureLine.SetPosition(1, previousItem.transform.position);
 		}
 
 		private void DisableStagePlacement()
