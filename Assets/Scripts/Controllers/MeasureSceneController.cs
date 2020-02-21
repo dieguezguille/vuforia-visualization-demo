@@ -21,7 +21,7 @@ namespace Assets.Scripts.Controllers
 		private GameObject previousItem;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
-		//private LineRenderer measureLine;
+		private Color lineRendererMaterial;
 
 		public List<GameObject> ARMarkerList { get; set; }
 
@@ -47,8 +47,8 @@ namespace Assets.Scripts.Controllers
 				toolTip = GameObject.Find("TapScreenToolTip");
 				groundPlane = GameObject.Find("Ground Plane Stage");
 				planeFinder = GameObject.Find("Plane Finder");
-				//measureLine = GameObject.Find("MeasureLine").GetComponent<LineRenderer>();
 				ARMarkerList = new List<GameObject>();
+				lineRendererMaterial = Color.red;
 			}
 			catch (Exception ex) { }
 		}
@@ -69,9 +69,9 @@ namespace Assets.Scripts.Controllers
 			newLine.transform.parent = groundPlane.transform;
 
 			var lineRenderer = newLine.GetComponent<LineRenderer>();
-			//lineRenderer.material = Resources.Load("Materials/RedTransparent") as Material;
-			lineRenderer.startWidth = 0.07f;
-			lineRenderer.endWidth = 0.07f;
+			lineRenderer.material.color = lineRendererMaterial;
+			lineRenderer.startWidth = 0.02f;
+			lineRenderer.endWidth = 0.02f;
 			lineRenderer.useWorldSpace = true;
 			lineRenderer.alignment = LineAlignment.TransformZ;
 			lineRenderer.SetPosition(0, CurrentItem.GetComponent<Marker>().Position);
