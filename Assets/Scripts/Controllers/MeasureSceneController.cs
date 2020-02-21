@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Interfaces;
+using Assets.Scripts.Models;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace Assets.Scripts.Controllers
 		private GameObject previousItem;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
-		private LineRenderer measureLine;
+		//private LineRenderer measureLine;
 
 		public List<GameObject> ARMarkerList { get; set; }
 
@@ -46,7 +47,7 @@ namespace Assets.Scripts.Controllers
 				toolTip = GameObject.Find("TapScreenToolTip");
 				groundPlane = GameObject.Find("Ground Plane Stage");
 				planeFinder = GameObject.Find("Plane Finder");
-				measureLine = GameObject.Find("MeasureLine").GetComponent<LineRenderer>();
+				//measureLine = GameObject.Find("MeasureLine").GetComponent<LineRenderer>();
 				ARMarkerList = new List<GameObject>();
 			}
 			catch (Exception ex) { }
@@ -56,7 +57,38 @@ namespace Assets.Scripts.Controllers
 		{
 			if (ARMarkerList != null && ARMarkerList.Count > 1)
 			{
-				CalculateDistance();
+				ShowLastSegmentDistance();
+				CreateLineRenderer();
+			}
+		}
+
+		private void CreateLineRenderer()
+		{
+			GameObject newLine = new GameObject("Line");
+			newLine.AddComponent<LineRenderer>();
+			newLine.transform.parent = groundPlane.transform;
+
+			var lineRenderer = newLine.GetComponent<LineRenderer>();
+			//lineRenderer.material = Resources.Load("Materials/RedTransparent") as Material;
+			lineRenderer.startWidth = 0.07f;
+			lineRenderer.endWidth = 0.07f;
+			lineRenderer.useWorldSpace = true;
+			lineRenderer.alignment = LineAlignment.TransformZ;
+			lineRenderer.SetPosition(0, CurrentItem.GetComponent<Marker>().Position);
+			lineRenderer.SetPosition(1, previousItem.GetComponent<Marker>().Position);
+		}
+
+		private void ShowLastSegmentDistance()
+		{
+			var lastSegmentDistance = CurrentItem.GetComponent<Marker>().LastSegmentDistance;
+
+			if (lastSegmentDistance > 1)
+			{
+				debugText.text = $"Last segment is {Math.Round(lastSegmentDistance, 2)} meters.";
+			}
+			else
+			{
+				debugText.text = $"Last segment is: {Math.Round(lastSegmentDistance, 2) * 100} centimeters.";
 			}
 		}
 
@@ -72,10 +104,22 @@ namespace Assets.Scripts.Controllers
 
 		public void InstantiateMarker()
 		{
-			GameObject prefab = Resources.Load($"Prefabs/Bandera") as GameObject;
-			ARMarkerList.Add(CurrentItem);
+			// instantiate prefab
+			GameObject prefab = Resources.Load($"Prefabs/Marker") as GameObject;
 			CurrentItem = Instantiate(prefab);
-			debugText.text = $"There are {groundPlane.transform.childCount - 1} markers in total.";
+
+			// set prefab marker properties
+			var marker = CurrentItem.GetComponent<Marker>();
+
+			if (marker != null && previousItem != null)
+			{
+				marker.PreviousMarker = previousItem.GetComponent<Marker>();
+			}
+
+			CurrentItem.GetComponent<Marker>().Position = CurrentItem.transform.position;
+
+			// add marker to list
+			ARMarkerList.Add(CurrentItem);
 		}
 
 		public void InitializeDefaultScene()
@@ -107,24 +151,6 @@ namespace Assets.Scripts.Controllers
 				ShowTapScreenToolTip();
 			}
 			catch (Exception) { }
-		}
-
-		private void CalculateDistance()
-		{
-			var distance = Vector3.Distance(CurrentItem.transform.position, previousItem.transform.position);
-
-			if (distance > 1)
-			{
-				debugText.text = $"Distance: {Math.Round(distance, 2)} meters.";
-			}
-			else
-			{
-				debugText.text = $"Distance: {Math.Round(distance, 2) * 100} centimeters.";
-			}
-
-			// create line between the 2 markers
-			measureLine.SetPosition(0, CurrentItem.transform.position);
-			measureLine.SetPosition(1, previousItem.transform.position);
 		}
 
 		private void DisableStagePlacement()
