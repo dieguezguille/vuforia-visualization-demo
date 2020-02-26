@@ -123,7 +123,11 @@ namespace Assets.Scripts.Controllers
 
 			// add marker to list
 			ARMarkerList.Add(CurrentItem);
-			//CreateLineRenderer();
+
+			if (ARMarkerList != null && ARMarkerList.Count > 1)
+			{
+				CreateLineRenderer();
+			}
 		}
 
 		public void InitializeDefaultScene()
