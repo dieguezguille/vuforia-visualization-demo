@@ -57,8 +57,7 @@ namespace Assets.Scripts.Controllers
 		{
 			if (ARMarkerList != null && ARMarkerList.Count > 1)
 			{
-				ShowLastSegmentDistance();
-				CreateLineRenderer();
+				ShowDistanceMetrics();
 			}
 		}
 
@@ -78,18 +77,22 @@ namespace Assets.Scripts.Controllers
 			lineRenderer.SetPosition(1, previousItem.GetComponent<Marker>().Position);
 		}
 
-		private void ShowLastSegmentDistance()
+		private void ShowDistanceMetrics()
 		{
+			// last segment distance
 			var lastSegmentDistance = CurrentItem.GetComponent<Marker>().LastSegmentDistance;
+			debugText.text = lastSegmentDistance > 1 ? $"LAST: {Math.Round(lastSegmentDistance, 2)} mts." : $"LAST: {Math.Round(lastSegmentDistance, 2) * 100} cm.";
 
-			if (lastSegmentDistance > 1)
+			// total distance
+			var totalDistance = 0.0f;
+
+			foreach (var marker in ARMarkerList)
 			{
-				debugText.text = $"Last segment is {Math.Round(lastSegmentDistance, 2)} meters.";
+				var dist = marker.GetComponent<Marker>().LastSegmentDistance;
+				totalDistance += dist;
 			}
-			else
-			{
-				debugText.text = $"Last segment is: {Math.Round(lastSegmentDistance, 2) * 100} centimeters.";
-			}
+
+			debugText.text += totalDistance > 1 ? $"TOTAL: {Math.Round(totalDistance, 2)} mts." : $"TOTAL: {Math.Round(totalDistance, 2) * 100} cm.";
 		}
 
 		public void ResetScene()
@@ -102,7 +105,7 @@ namespace Assets.Scripts.Controllers
 			SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
 		}
 
-		public void InstantiateMarker()
+		public void CreateMarker()
 		{
 			// instantiate prefab
 			GameObject prefab = Resources.Load($"Prefabs/Marker") as GameObject;
@@ -120,6 +123,7 @@ namespace Assets.Scripts.Controllers
 
 			// add marker to list
 			ARMarkerList.Add(CurrentItem);
+			//CreateLineRenderer();
 		}
 
 		public void InitializeDefaultScene()
