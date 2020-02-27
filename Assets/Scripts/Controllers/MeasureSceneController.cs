@@ -57,7 +57,7 @@ namespace Assets.Scripts.Controllers
 		{
 			if (ARMarkerList != null && ARMarkerList.Count > 1)
 			{
-				ShowDistanceMetrics();
+				ShowMetrics();
 			}
 		}
 
@@ -77,7 +77,7 @@ namespace Assets.Scripts.Controllers
 			lineRenderer.SetPosition(1, previousItem.GetComponent<Marker>().Position);
 		}
 
-		private void ShowDistanceMetrics()
+		private void ShowMetrics()
 		{
 			// last segment distance
 			var lastSegmentDistance = CurrentItem.GetComponent<Marker>().LastSegmentDistance;
@@ -92,7 +92,18 @@ namespace Assets.Scripts.Controllers
 				totalDistance += dist;
 			}
 
-			debugText.text += totalDistance > 1 ? $"TOTAL: {Math.Round(totalDistance, 2)} mts." : $"TOTAL: {Math.Round(totalDistance, 2) * 100} cm.";
+			debugText.text += totalDistance > 1 ? $" TOTAL: {Math.Round(totalDistance, 2)} mts." : $" TOTAL: {Math.Round(totalDistance, 2) * 100} cm.";
+
+			// angle
+			var currentPos = CurrentItem.GetComponent<Marker>().Position;
+			var prevPos = previousItem.GetComponent<Marker>().Position;
+
+			var projectedVector = Vector3.ProjectOnPlane(currentPos - prevPos, groundPlane.transform.forward);
+			float xyAngle = Vector3.SignedAngle(projectedVector, groundPlane.transform.up, groundPlane.transform.forward);
+			float finalAngle = Math.Abs(xyAngle) - 90;
+
+			debugText.text += $" ANGLE: {Math.Round(finalAngle, 2)} dgs.";
+			//debugText.text += $" ANGLE: {Vector3.Angle(previousItem.GetComponent<Marker>().Position, CurrentItem.GetComponent<Marker>().Position)} dg";
 		}
 
 		public void ResetScene()
