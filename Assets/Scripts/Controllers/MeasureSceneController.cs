@@ -57,7 +57,7 @@ namespace Assets.Scripts.Controllers
 		{
 			if (ARMarkerList != null && ARMarkerList.Count > 1)
 			{
-				ShowMetrics();
+				UpdateMetrics();
 			}
 		}
 
@@ -77,33 +77,28 @@ namespace Assets.Scripts.Controllers
 			lineRenderer.SetPosition(1, previousItem.GetComponent<Marker>().Position);
 		}
 
-		private void ShowMetrics()
+		private void UpdateMetrics()
 		{
 			// last segment distance
 			var lastSegmentDistance = CurrentItem.GetComponent<Marker>().LastSegmentDistance;
 			debugText.text = lastSegmentDistance > 1 ? $"LAST: {Math.Round(lastSegmentDistance, 2)} mts." : $"LAST: {Math.Round(lastSegmentDistance, 2) * 100} cm.";
 
 			// total distance
-			var totalDistance = 0.0f;
-
+			var perimeterDistance = 0.0f;
 			foreach (var marker in ARMarkerList)
 			{
 				var dist = marker.GetComponent<Marker>().LastSegmentDistance;
-				totalDistance += dist;
+				perimeterDistance += dist;
 			}
 
-			debugText.text += totalDistance > 1 ? $" TOTAL: {Math.Round(totalDistance, 2)} mts." : $" TOTAL: {Math.Round(totalDistance, 2) * 100} cm.";
+			debugText.text += perimeterDistance > 1 ? $" TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $" TOTAL: {Math.Round(perimeterDistance, 2) * 100} cm.";
 
 			// angle
-			var currentPos = CurrentItem.GetComponent<Marker>().Position;
-			var prevPos = previousItem.GetComponent<Marker>().Position;
+			var from = CurrentItem.transform.position - previousItem.transform.position;
+			var to = Vector3.ProjectOnPlane(from, -CurrentItem.transform.up);
+			var angle = Vector3.Angle(from, to);
 
-			var projectedVector = Vector3.ProjectOnPlane(currentPos - prevPos, groundPlane.transform.forward);
-			float xyAngle = Vector3.SignedAngle(projectedVector, groundPlane.transform.up, groundPlane.transform.forward);
-			float finalAngle = Math.Abs(xyAngle) - 90;
-
-			debugText.text += $" ANGLE: {Math.Round(finalAngle, 2)} dgs.";
-			//debugText.text += $" ANGLE: {Vector3.Angle(previousItem.GetComponent<Marker>().Position, CurrentItem.GetComponent<Marker>().Position)} dg";
+			debugText.text += $" ANGLE: {Math.Round(angle, 2)} dgs.";
 		}
 
 		public void ResetScene()
