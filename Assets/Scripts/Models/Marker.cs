@@ -2,9 +2,9 @@
 
 namespace Assets.Scripts.Models
 {
-	public class Marker : MonoBehaviour
+	public class Marker
 	{
-		public Marker PreviousMarker { get; set; }
+		public Marker Previous { get; set; }
 
 		public Vector3 Position { get; set; }
 
@@ -12,9 +12,9 @@ namespace Assets.Scripts.Models
 		{
 			get
 			{
-				if (PreviousMarker != null && PreviousMarker.Position != null && Position != null)
+				if (Previous != null && Previous.Position != null && Position != null)
 				{
-					return Vector3.Distance(Position, PreviousMarker.Position);
+					return Vector3.Distance(Position, Previous.Position);
 				}
 				else
 				{

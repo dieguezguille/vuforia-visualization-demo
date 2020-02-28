@@ -1,7 +1,7 @@
-﻿using Assets.Scripts.Interfaces;
-using Assets.Scripts.Models;
+﻿using Assets.Scripts.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,7 +9,7 @@ using Vuforia;
 
 namespace Assets.Scripts.Controllers
 {
-	public class MeasureSceneController : MonoBehaviour, ISceneController
+	public class MeasureSceneController : MonoBehaviour
 	{
 		public Text debugText;
 		public Camera arCamera;
@@ -17,24 +17,24 @@ namespace Assets.Scripts.Controllers
 		private GameObject loading;
 		private GameObject toolTip;
 
-		private GameObject currentItem;
-		private GameObject previousItem;
+		private GameObject currentMarker;
+		private GameObject PreviousMarker;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
 		private Color lineRendererMaterial;
 
-		public List<GameObject> ARMarkerList { get; set; }
+		public List<Marker> MarkerList { get; set; }
 
-		public GameObject CurrentItem
+		public GameObject CurrentMarker
 		{
 			get
 			{
-				return currentItem;
+				return currentMarker;
 			}
 			set
 			{
-				previousItem = currentItem;
-				currentItem = value;
+				PreviousMarker = currentMarker;
+				currentMarker = value;
 				SetUpCurrentItem();
 			}
 		}
@@ -47,7 +47,7 @@ namespace Assets.Scripts.Controllers
 				toolTip = GameObject.Find("TapScreenToolTip");
 				groundPlane = GameObject.Find("Ground Plane Stage");
 				planeFinder = GameObject.Find("Plane Finder");
-				ARMarkerList = new List<GameObject>();
+				MarkerList = new List<Marker>();
 				lineRendererMaterial = Color.red;
 			}
 			catch (Exception ex) { }
@@ -55,55 +55,69 @@ namespace Assets.Scripts.Controllers
 
 		void Update()
 		{
-			if (ARMarkerList != null && ARMarkerList.Count > 1)
+			if (MarkerList != null && MarkerList.Count > 1)
 			{
 				UpdateMetrics();
 			}
 		}
 
-		private void CreateLineRenderer()
+		private void CreateLineRenderer(Vector3 initialPos, Vector3 finalPos)
 		{
-			GameObject newLine = new GameObject("Line");
-			newLine.AddComponent<LineRenderer>();
-			newLine.transform.parent = groundPlane.transform;
+			try
+			{
+				GameObject newLine = new GameObject("Line");
+				newLine.AddComponent<LineRenderer>();
+				newLine.transform.parent = groundPlane.transform;
 
-			var lineRenderer = newLine.GetComponent<LineRenderer>();
-			lineRenderer.material.color = lineRendererMaterial;
-			lineRenderer.startWidth = 0.02f;
-			lineRenderer.endWidth = 0.02f;
-			lineRenderer.useWorldSpace = true;
-			lineRenderer.alignment = LineAlignment.TransformZ;
-			lineRenderer.SetPosition(0, CurrentItem.GetComponent<Marker>().Position);
-			lineRenderer.SetPosition(1, previousItem.GetComponent<Marker>().Position);
+				var lineRenderer = newLine.GetComponent<LineRenderer>();
+				lineRenderer.material.color = lineRendererMaterial;
+				lineRenderer.startWidth = 0.02f;
+				lineRenderer.endWidth = 0.02f;
+				lineRenderer.useWorldSpace = true;
+				lineRenderer.alignment = LineAlignment.TransformZ;
+				lineRenderer.SetPosition(0, new Vector3(initialPos.x, initialPos.y + 0.07f, initialPos.z));
+				lineRenderer.SetPosition(1, new Vector3(finalPos.x, finalPos.y + 0.07f, finalPos.z));
+			}
+			catch (Exception ex)
+			{
+				debugText.text = $"{ex.Message}";
+			}
 		}
 
 		private void UpdateMetrics()
 		{
-			// last segment distance
-			var lastSegmentDistance = CurrentItem.GetComponent<Marker>().LastSegmentDistance;
-			debugText.text = lastSegmentDistance > 1 ? $"LAST: {Math.Round(lastSegmentDistance, 2)} mts." : $"LAST: {Math.Round(lastSegmentDistance, 2) * 100} cm.";
-
-			// total distance
-			var perimeterDistance = 0.0f;
-			foreach (var marker in ARMarkerList)
+			try
 			{
-				var dist = marker.GetComponent<Marker>().LastSegmentDistance;
-				perimeterDistance += dist;
+				// last segment distance
+				var lastSegmentDistance = MarkerList.Last().LastSegmentDistance;
+				debugText.text = lastSegmentDistance > 1 ? $"LAST: {Math.Round(lastSegmentDistance, 2)} mts." : $"LAST: {Math.Round(lastSegmentDistance, 2) * 100} cms.";
+
+				// total distance
+				var perimeterDistance = 0.0f;
+				foreach (var marker in MarkerList)
+				{
+					var dist = marker.LastSegmentDistance;
+					perimeterDistance += dist;
+				}
+
+				debugText.text += perimeterDistance > 1 ? $" TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $" TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
+
+				// angle
+				var from = CurrentMarker.transform.position - PreviousMarker.transform.position;
+				var to = Vector3.ProjectOnPlane(from, -CurrentMarker.transform.up);
+				var angle = Vector3.Angle(from, to);
+
+				debugText.text += $" ANGLE: {Math.Round(angle, 2)} dgs.";
 			}
-
-			debugText.text += perimeterDistance > 1 ? $" TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $" TOTAL: {Math.Round(perimeterDistance, 2) * 100} cm.";
-
-			// angle
-			var from = CurrentItem.transform.position - previousItem.transform.position;
-			var to = Vector3.ProjectOnPlane(from, -CurrentItem.transform.up);
-			var angle = Vector3.Angle(from, to);
-
-			debugText.text += $" ANGLE: {Math.Round(angle, 2)} dgs.";
+			catch (Exception ex)
+			{
+				debugText.text = $"{ex.Message}";
+			}
 		}
 
 		public void ResetScene()
 		{
-			SceneManager.LoadScene("MeasureScene", LoadSceneMode.Single);
+			SceneManager.LoadScene("MeasureScene_Area", LoadSceneMode.Single);
 		}
 
 		public void GoMainMenu()
@@ -113,27 +127,57 @@ namespace Assets.Scripts.Controllers
 
 		public void CreateMarker()
 		{
-			// instantiate prefab
-			GameObject prefab = Resources.Load($"Prefabs/Marker") as GameObject;
-			CurrentItem = Instantiate(prefab);
-
-			// set prefab marker properties
-			var marker = CurrentItem.GetComponent<Marker>();
-
-			if (marker != null && previousItem != null)
+			try
 			{
-				marker.PreviousMarker = previousItem.GetComponent<Marker>();
+				GameObject prefab = Resources.Load($"Prefabs/Marker") as GameObject;
+				CurrentMarker = Instantiate(prefab);
+
+				var newMarker = new Marker()
+				{
+					Previous = (MarkerList != null && MarkerList.Count > 0) ? MarkerList.Last() : null,
+					Position = CurrentMarker.transform.position,
+				};
+
+				if (MarkerList != null && MarkerList.Count > 1)
+				{
+					CreateLineRenderer(PreviousMarker.transform.position, CurrentMarker.transform.position);
+				}
+
+				MarkerList.Add(newMarker);
+
 			}
-
-			CurrentItem.GetComponent<Marker>().Position = CurrentItem.transform.position;
-
-			// add marker to list
-			ARMarkerList.Add(CurrentItem);
-
-			if (ARMarkerList != null && ARMarkerList.Count > 1)
+			catch (Exception ex)
 			{
-				CreateLineRenderer();
+				debugText.text = $"{ex.Message}";
 			}
+		}
+
+		public void FinishAddingMarkers()
+		{
+			var lastMarker = new Marker()
+			{
+				Previous = MarkerList.Last(),
+				Position = MarkerList.First().Position,
+			};
+
+			MarkerList.Add(lastMarker);
+
+			Vector3 initialPos = MarkerList.Last().Position;
+			Vector3 finalPos = MarkerList.First().Position;
+			CreateLineRenderer(initialPos, finalPos);
+
+			CreateMesh();
+		}
+
+		private void CreateMesh()
+		{
+			debugText.text = "CREATED MESH!";
+			// crear array de vertices
+			//Vector2[] vertices2D = ARMarkerList.ForEach(marker => marker.transform.pos
+			// usar triangulator para calcular indices de triangulos
+			// crear los vertices
+			// crear la malla
+			// crear gameobject con la malla
 		}
 
 		public void InitializeDefaultScene()
@@ -153,6 +197,27 @@ namespace Assets.Scripts.Controllers
 				toolTip.SetActive(false);
 				DisableStagePlacement();
 				ShowAddMarkerButton();
+				ShowFinishButton();
+			}
+			catch (Exception) { }
+		}
+
+		private void ShowFinishButton()
+		{
+			try
+			{
+				var button = GameObject.Find("FinishButton");
+				button.GetComponent<Animator>().SetBool("isShown", true);
+			}
+			catch (Exception) { }
+		}
+
+		private void HideFinishButton()
+		{
+			try
+			{
+				var button = GameObject.Find("FinishButton");
+				button.GetComponent<Animator>().SetBool("isShown", false);
 			}
 			catch (Exception) { }
 		}
@@ -232,9 +297,9 @@ namespace Assets.Scripts.Controllers
 		{
 			try
 			{
-				CurrentItem.transform.parent = groundPlane.transform;
-				CurrentItem.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
-				CurrentItem.transform.localScale = CurrentItem.transform.lossyScale;
+				CurrentMarker.transform.parent = groundPlane.transform;
+				CurrentMarker.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
+				CurrentMarker.transform.localScale = CurrentMarker.transform.lossyScale;
 			}
 			catch (Exception ex) { }
 		}

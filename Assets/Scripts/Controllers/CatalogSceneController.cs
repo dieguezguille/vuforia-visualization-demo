@@ -1,8 +1,5 @@
-﻿using Assets.Scripts.Interfaces;
-using Lean.Touch;
+﻿using Lean.Touch;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,7 +7,7 @@ using Vuforia;
 
 namespace Assets.Scripts.Controllers
 {
-	public class CatalogSceneController : MonoBehaviour, ISceneController
+	public class CatalogSceneController : MonoBehaviour
 	{
 		public Text debugText;
 		public Camera arCamera;

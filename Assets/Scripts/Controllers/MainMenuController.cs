@@ -9,6 +9,6 @@ public class MainMenuController : MonoBehaviour
 	}
 	public void GoArRuler()
 	{
-		SceneManager.LoadScene("MeasureScene", LoadSceneMode.Single);
+		SceneManager.LoadScene("MeasureScene_Area", LoadSceneMode.Single);
 	}
 }
