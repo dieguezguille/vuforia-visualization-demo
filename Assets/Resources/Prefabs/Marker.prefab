@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 563364454338404823}
-  - component: {fileID: 5599502280605410585}
   m_Layer: 0
   m_Name: Marker
   m_TagString: Untagged
@@ -33,18 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5599502280605410585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3569702094967067588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 916a29c9f9b770c4ab5f3b83943ba136, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4648894425440228103
 GameObject:
   m_ObjectHideFlags: 0
