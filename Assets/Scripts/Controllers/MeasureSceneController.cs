@@ -184,43 +184,25 @@ namespace Assets.Scripts.Controllers
 
 		private void CreateMesh()
 		{
-			var vectorList = new List<Vector2>();
+			Vector2[] points2D = new Vector2[MarkerList.Count - 1];
 
-			foreach (Marker marker in MarkerList)
+			for (int i = 0; i < MarkerList.Count - 1; i++)
 			{
-				vectorList.Add(new Vector2(marker.Position.x, marker.Position.y));
+				points2D[i] = new Vector2(MarkerList[i].Position.x, MarkerList[i].Position.z);
 			}
 
-			Vector2[] vertices2D = vectorList.ToArray();
+			Triangulator.Instance.SetPoints(points2D);
+			int[] triangles = Triangulator.Instance.Triangulate();
+			Vector3[] vertices3D = new Vector3[points2D.Length];
 
-			//Vector2[] vertices2D = new Vector2[]
-			//{
-			//	new Vector2(0,0),
-			//	new Vector2(0,50),
-			//	new Vector2(50,50),
-			//	new Vector2(50,100),
-			//	new Vector2(0,100),
-			//	new Vector2(0,150),
-			//	new Vector2(150,150),
-			//	new Vector2(150,100),
-			//	new Vector2(100,100),
-			//	new Vector2(100,50),
-			//	new Vector2(150,50),
-			//	new Vector2(150,0),
-			//};
-
-			Triangulator.Instance.SetPoints(vertices2D);
-			int[] indices = Triangulator.Instance.Triangulate();
-
-			Vector3[] vertices = new Vector3[vertices2D.Length];
-			for (int i = 0; i < vertices.Length; i++)
+			for (int i = 0; i < vertices3D.Length; i++)
 			{
-				vertices[i] = new Vector3(vertices2D[i].x, vertices2D[i].y, MarkerList[i].Position.z);
+				vertices3D[i] = new Vector3(points2D[i].x, points2D[i].y, 0);
 			}
 
 			Mesh msh = new Mesh();
-			msh.vertices = vertices;
-			msh.triangles = indices;
+			msh.vertices = vertices3D;
+			msh.triangles = triangles;
 			msh.RecalculateNormals();
 			msh.RecalculateBounds();
 
@@ -234,8 +216,6 @@ namespace Assets.Scripts.Controllers
 
 			MeshFilter filter = emptyGo.AddComponent(typeof(MeshFilter)) as MeshFilter;
 			filter.mesh = msh;
-
-			debugText.text = "CREATED MESH!";
 		}
 
 		public void InitializeDefaultScene()
