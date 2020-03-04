@@ -25,6 +25,7 @@ namespace Assets.Scripts.Controllers
 		private GameObject planeFinder;
 		private bool shouldUpdateMetrics = false;
 		private Color lineRendererMaterial;
+		private Material surfaceAreaMaterial;
 
 		public List<Marker> MarkerList { get; set; }
 
@@ -52,6 +53,7 @@ namespace Assets.Scripts.Controllers
 				planeFinder = GameObject.Find("Plane Finder");
 				MarkerList = new List<Marker>();
 				lineRendererMaterial = Color.red;
+				surfaceAreaMaterial = Resources.Load("Materials/SurfaceArea") as Material;
 			}
 			catch (Exception ex) { }
 		}
@@ -67,8 +69,6 @@ namespace Assets.Scripts.Controllers
 				StopCoroutine(UpdateMetrics());
 			}
 		}
-
-
 
 		private void CreateLineRenderer(Vector3 initialPos, Vector3 finalPos)
 		{
@@ -142,10 +142,10 @@ namespace Assets.Scripts.Controllers
 					Position = CurrentMarker.transform.position,
 				};
 
-				if (MarkerList != null && MarkerList.Count > 1)
-				{
-					CreateLineRenderer(PreviousMarker.transform.position, CurrentMarker.transform.position);
-				}
+				//if (MarkerList != null && MarkerList.Count > 1)
+				//{
+				//	CreateLineRenderer(PreviousMarker.transform.position, CurrentMarker.transform.position);
+				//}
 
 				MarkerList.Add(newMarker);
 				shouldUpdateMetrics = true;
@@ -170,7 +170,7 @@ namespace Assets.Scripts.Controllers
 
 				Vector3 initialPos = MarkerList.Last().Position;
 				Vector3 finalPos = MarkerList.First().Position;
-				CreateLineRenderer(initialPos, finalPos);
+				//CreateLineRenderer(initialPos, finalPos);
 
 				MarkerList.Add(lastMarker);
 				CreateMesh();
@@ -184,6 +184,8 @@ namespace Assets.Scripts.Controllers
 
 		private void CreateMesh()
 		{
+			// create points in 2d space
+
 			Vector2[] points2D = new Vector2[MarkerList.Count - 1];
 
 			for (int i = 0; i < MarkerList.Count - 1; i++)
@@ -191,28 +193,36 @@ namespace Assets.Scripts.Controllers
 				points2D[i] = new Vector2(MarkerList[i].Position.x, MarkerList[i].Position.z);
 			}
 
+			// set points and triangulate
+
 			Triangulator.Instance.SetPoints(points2D);
 			int[] triangles = Triangulator.Instance.Triangulate();
+
+			// create vertices in 3d space
 			Vector3[] vertices3D = new Vector3[points2D.Length];
 
 			for (int i = 0; i < vertices3D.Length; i++)
 			{
-				vertices3D[i] = new Vector3(points2D[i].x, points2D[i].y, 0);
+				vertices3D[i] = new Vector3(points2D[i].x, MarkerList[i].Position.y + 0.03f, points2D[i].y);
 			}
 
+			// create mesh and assign props
 			Mesh msh = new Mesh();
 			msh.vertices = vertices3D;
 			msh.triangles = triangles;
 			msh.RecalculateNormals();
 			msh.RecalculateBounds();
 
+			// create container gameobject
 			GameObject emptyGo = new GameObject();
 			emptyGo.name = "Area";
 			emptyGo.transform.parent = groundPlane.transform;
-			emptyGo.transform.localPosition = new Vector3(MarkerList.First().Position.x, 0.06f, MarkerList.First().Position.z);
 
 			MeshRenderer meshRenderer = emptyGo.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
 			meshRenderer.enabled = true;
+			meshRenderer.material = surfaceAreaMaterial;
+			meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+			meshRenderer.receiveShadows = false;
 
 			MeshFilter filter = emptyGo.AddComponent(typeof(MeshFilter)) as MeshFilter;
 			filter.mesh = msh;
