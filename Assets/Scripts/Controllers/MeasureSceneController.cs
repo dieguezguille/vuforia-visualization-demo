@@ -26,6 +26,7 @@ namespace Assets.Scripts.Controllers
 		private bool shouldUpdateMetrics = false;
 		private Color lineRendererMaterial;
 		private Material surfaceAreaMaterial;
+		private float surfaceArea;
 
 		public List<Marker> MarkerList { get; set; }
 
@@ -96,8 +97,8 @@ namespace Assets.Scripts.Controllers
 		IEnumerator UpdateMetrics()
 		{
 			// last segment distance
-			var lastSegmentDistance = MarkerList.Last().LastSegmentDistance;
-			debugText.text = lastSegmentDistance > 1 ? $"LAST: {Math.Round(lastSegmentDistance, 2)} mts." : $"LAST: {Math.Round(lastSegmentDistance, 2) * 100} cms.";
+			//var lastSegmentDistance = MarkerList.Last().LastSegmentDistance;
+			//debugText.text = lastSegmentDistance > 1 ? $"LAST: {Math.Round(lastSegmentDistance, 2)} mts." : $"LAST: {Math.Round(lastSegmentDistance, 2) * 100} cms.";
 
 			// total distance
 			var perimeterDistance = 0.0f;
@@ -107,14 +108,14 @@ namespace Assets.Scripts.Controllers
 				perimeterDistance += dist;
 			}
 
-			debugText.text += perimeterDistance > 1 ? $" TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $" TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
+			debugText.text = perimeterDistance > 1 ? $"TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $" TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
 
-			// angle
-			var from = CurrentMarker.transform.position - PreviousMarker.transform.position;
-			var to = Vector3.ProjectOnPlane(from, -CurrentMarker.transform.up);
-			var angle = Vector3.Angle(from, to);
+			//angle
+			//var from = CurrentMarker.transform.position - PreviousMarker.transform.position;
+			//var to = Vector3.ProjectOnPlane(from, -CurrentMarker.transform.up);
+			//var angle = Vector3.Angle(from, to);
 
-			debugText.text += $" ANGLE: {Math.Round(angle, 2)} dgs.";
+			//debugText.text += $" ANGLE: {Math.Round(angle, 2)} dgs.";
 
 			yield return new WaitForSeconds(.1f);
 		}
@@ -185,7 +186,6 @@ namespace Assets.Scripts.Controllers
 		private void CreateMesh()
 		{
 			// create points in 2d space
-
 			Vector2[] points2D = new Vector2[MarkerList.Count - 1];
 
 			for (int i = 0; i < MarkerList.Count - 1; i++)
@@ -194,7 +194,6 @@ namespace Assets.Scripts.Controllers
 			}
 
 			// set points and triangulate
-
 			Triangulator.Instance.SetPoints(points2D);
 			int[] triangles = Triangulator.Instance.Triangulate();
 
@@ -226,6 +225,24 @@ namespace Assets.Scripts.Controllers
 
 			MeshFilter filter = emptyGo.AddComponent(typeof(MeshFilter)) as MeshFilter;
 			filter.mesh = msh;
+
+			// calculate area
+			surfaceArea = CalculateSurfaceArea(msh);
+			debugText.text += surfaceArea > 1 ? $" SURFACE: {Math.Round(surfaceArea, 2)} sq. mts." : $" SURFACE: {Math.Round(surfaceArea, 2) * 100} sq. cms.";
+		}
+
+		private float CalculateSurfaceArea(Mesh m)
+		{
+			Vector3[] mVertices = m.vertices;
+			Vector3 result = Vector3.zero;
+
+			for (int p = mVertices.Length - 1, q = 0; q < mVertices.Length; p = q++)
+			{
+				result += Vector3.Cross(mVertices[q], mVertices[p]);
+			}
+
+			result *= 0.5f;
+			return result.magnitude;
 		}
 
 		public void InitializeDefaultScene()

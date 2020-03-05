@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SurfaceArea
-  m_Shader: {fileID: 4800000, guid: 25dafab3cec94d640b2215f9b3d449a0, type: 3}
+  m_Name: RedLine
+  m_Shader: {fileID: 4800000, guid: a83010b529da7224ab8b70eb206f2fab, type: 3}
   m_ShaderKeywords: _ALPHAPREMULTIPLY_ON _GLOSSYREFLECTIONS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -74,5 +74,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:
-    - _Color: {r: 0, g: 1, b: 0.034408808, a: 0.39215687}
+    - _Color: {r: 1, g: 0, b: 0, a: 0.39215687}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
