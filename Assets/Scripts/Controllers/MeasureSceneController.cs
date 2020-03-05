@@ -13,16 +13,19 @@ namespace Assets.Scripts.Controllers
 {
 	public class MeasureSceneController : MonoBehaviour
 	{
+		//
 		public Text debugText;
 		public Camera arCamera;
-
+		//
 		private GameObject loading;
 		private GameObject toolTip;
-
+		//
 		private GameObject currentMarker;
 		private GameObject PreviousMarker;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
+		private GameObject segmentLine;
+		//
 		private bool shouldUpdateMetrics = false;
 		private Color lineRendererMaterial;
 		private Material surfaceAreaMaterial;
@@ -55,6 +58,7 @@ namespace Assets.Scripts.Controllers
 				MarkerList = new List<Marker>();
 				lineRendererMaterial = Color.red;
 				surfaceAreaMaterial = Resources.Load("Materials/SurfaceArea") as Material;
+				segmentLine = Resources.Load("Prefabs/SegmentLine") as GameObject;
 			}
 			catch (Exception ex) { }
 		}
@@ -71,22 +75,27 @@ namespace Assets.Scripts.Controllers
 			}
 		}
 
-		private void CreateLineRenderer(Vector3 initialPos, Vector3 finalPos)
+		private void CreateSegmentLine(Vector3 initialPos, Vector3 finalPos)
 		{
 			try
 			{
-				GameObject newLine = new GameObject("Line");
-				newLine.AddComponent<LineRenderer>();
-				newLine.transform.parent = groundPlane.transform;
+				var line = Instantiate(segmentLine);
+				line.transform.parent = groundPlane.transform;
 
-				var lineRenderer = newLine.GetComponent<LineRenderer>();
-				lineRenderer.material.color = lineRendererMaterial;
-				lineRenderer.startWidth = 0.02f;
-				lineRenderer.endWidth = 0.02f;
-				lineRenderer.useWorldSpace = true;
-				lineRenderer.alignment = LineAlignment.TransformZ;
-				lineRenderer.SetPosition(0, new Vector3(initialPos.x, initialPos.y + 0.07f, initialPos.z));
-				lineRenderer.SetPosition(1, new Vector3(finalPos.x, finalPos.y + 0.07f, finalPos.z));
+				Vector3 between = finalPos - initialPos;
+				float distance = between.magnitude;
+				line.transform.localScale = new Vector3(0.01f, 0.01f, distance);
+				Vector3 pos = initialPos + (between / 2);
+				line.transform.position = pos;
+				line.transform.LookAt(finalPos);
+
+				// TODO: CREATE TEXT OVER LINE
+
+				//
+
+				//
+
+				//
 			}
 			catch (Exception ex)
 			{
@@ -143,12 +152,13 @@ namespace Assets.Scripts.Controllers
 					Position = CurrentMarker.transform.position,
 				};
 
-				//if (MarkerList != null && MarkerList.Count > 1)
-				//{
-				//	CreateLineRenderer(PreviousMarker.transform.position, CurrentMarker.transform.position);
-				//}
-
 				MarkerList.Add(newMarker);
+
+				if (MarkerList != null && MarkerList.Count > 1)
+				{
+					CreateSegmentLine(PreviousMarker.transform.position, CurrentMarker.transform.position);
+				}
+
 				shouldUpdateMetrics = true;
 			}
 			catch (Exception ex)
@@ -171,7 +181,7 @@ namespace Assets.Scripts.Controllers
 
 				Vector3 initialPos = MarkerList.Last().Position;
 				Vector3 finalPos = MarkerList.First().Position;
-				//CreateLineRenderer(initialPos, finalPos);
+				CreateSegmentLine(initialPos, finalPos);
 
 				MarkerList.Add(lastMarker);
 				CreateMesh();
@@ -202,7 +212,7 @@ namespace Assets.Scripts.Controllers
 
 			for (int i = 0; i < vertices3D.Length; i++)
 			{
-				vertices3D[i] = new Vector3(points2D[i].x, MarkerList[i].Position.y + 0.03f, points2D[i].y);
+				vertices3D[i] = new Vector3(points2D[i].x, MarkerList[i].Position.y + 0.005f, points2D[i].y);
 			}
 
 			// create mesh and assign props
