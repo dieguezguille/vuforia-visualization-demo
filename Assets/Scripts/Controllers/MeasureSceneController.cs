@@ -81,7 +81,6 @@ namespace Assets.Scripts.Controllers
 		{
 			try
 			{
-				// create line
 				var line = Instantiate(segmentLine);
 				line.transform.parent = groundPlane.transform;
 
@@ -92,7 +91,6 @@ namespace Assets.Scripts.Controllers
 				line.transform.position = pos;
 				line.transform.LookAt(finalPos);
 
-				// 3create 3d text
 				GameObject textGo = new GameObject();
 				textGo.name = "SegmentLineText";
 				textGo.transform.parent = groundPlane.transform;
@@ -273,6 +271,21 @@ namespace Assets.Scripts.Controllers
 			catch (Exception ex) { debugText.text = $"{ex.Message}"; }
 		}
 
+
+		public void ProcessHitTestResult(HitTestResult result)
+		{
+			HideSurfaceLoading();
+			ShowTapScreenToolTip();
+		}
+
+		private void SetUpCurrentItem()
+		{
+			CurrentMarker.transform.parent = groundPlane.transform;
+			CurrentMarker.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
+			CurrentMarker.transform.localScale = CurrentMarker.transform.lossyScale;
+		}
+
+		#region UI Methods
 		private void ShowFinishButton()
 		{
 			var button = GameObject.Find("FinishButton");
@@ -283,12 +296,6 @@ namespace Assets.Scripts.Controllers
 		{
 			var button = GameObject.Find("FinishButton");
 			button.GetComponent<Animator>().SetBool("isShown", false);
-		}
-
-		public void ProcessHitTestResult(HitTestResult result)
-		{
-			HideSurfaceLoading();
-			ShowTapScreenToolTip();
 		}
 
 		private void DisableStagePlacement()
@@ -327,12 +334,6 @@ namespace Assets.Scripts.Controllers
 			var button = GameObject.Find("AddMarkerButton");
 			button.GetComponent<Animator>().SetBool("isShown", false);
 		}
-
-		private void SetUpCurrentItem()
-		{
-			CurrentMarker.transform.parent = groundPlane.transform;
-			CurrentMarker.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
-			CurrentMarker.transform.localScale = CurrentMarker.transform.lossyScale;
-		}
+		#endregion
 	}
 }
