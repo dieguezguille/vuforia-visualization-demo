@@ -13,23 +13,26 @@ namespace Assets.Scripts.Controllers
 {
 	public class MeasureSceneController : MonoBehaviour
 	{
-		//
+		#region Variables
+		// WORLD GO's
 		public Text debugText;
 		public Camera arCamera;
-		//
+		// UI
 		private GameObject loading;
 		private GameObject toolTip;
-		//
+		// VUFORIA
 		private GameObject currentMarker;
 		private GameObject PreviousMarker;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
 		private GameObject segmentLine;
-		//
+		// VARS
 		private bool shouldUpdateMetrics = false;
 		private Material surfaceAreaMaterial;
 		private float surfaceArea;
+		#endregion
 
+		#region Properties
 		public List<Marker> MarkerList { get; set; }
 
 		public GameObject CurrentMarker
@@ -45,6 +48,7 @@ namespace Assets.Scripts.Controllers
 				SetUpCurrentItem();
 			}
 		}
+		#endregion
 
 		void Start()
 		{
@@ -58,7 +62,7 @@ namespace Assets.Scripts.Controllers
 				segmentLine = Resources.Load("Prefabs/SegmentLine") as GameObject;
 				MarkerList = new List<Marker>();
 			}
-			catch (Exception ex) { }
+			catch (Exception ex) { debugText.text = $"{ex.Message}"; }
 		}
 
 		void Update()
@@ -112,10 +116,6 @@ namespace Assets.Scripts.Controllers
 
 		IEnumerator UpdateMetrics()
 		{
-			// last segment distance
-			//var lastSegmentDistance = MarkerList.Last().LastSegmentDistance;
-			//debugText.text = lastSegmentDistance > 1 ? $"LAST: {Math.Round(lastSegmentDistance, 2)} mts." : $"LAST: {Math.Round(lastSegmentDistance, 2) * 100} cms.";
-
 			// total distance
 			var perimeterDistance = 0.0f;
 			foreach (var marker in MarkerList)
@@ -196,13 +196,11 @@ namespace Assets.Scripts.Controllers
 			catch (Exception ex)
 			{
 				debugText.text = ex.Message;
-				Debug.Log(ex);
 			}
 		}
 
 		private void CreateMesh()
 		{
-			// create points in 2d space
 			Vector2[] points2D = new Vector2[MarkerList.Count - 1];
 
 			for (int i = 0; i < MarkerList.Count - 1; i++)
@@ -210,11 +208,9 @@ namespace Assets.Scripts.Controllers
 				points2D[i] = new Vector2(MarkerList[i].Position.x, MarkerList[i].Position.z);
 			}
 
-			// set points and triangulate
 			Triangulator.Instance.SetPoints(points2D);
 			int[] triangles = Triangulator.Instance.Triangulate();
 
-			// create vertices in 3d space
 			Vector3[] vertices3D = new Vector3[points2D.Length];
 
 			for (int i = 0; i < vertices3D.Length; i++)
@@ -222,14 +218,12 @@ namespace Assets.Scripts.Controllers
 				vertices3D[i] = new Vector3(points2D[i].x, MarkerList[i].Position.y + 0.005f, points2D[i].y);
 			}
 
-			// create mesh and assign props
 			Mesh msh = new Mesh();
 			msh.vertices = vertices3D;
 			msh.triangles = triangles;
 			msh.RecalculateNormals();
 			msh.RecalculateBounds();
 
-			// create container gameobject
 			GameObject emptyGo = new GameObject();
 			emptyGo.name = "Area";
 			emptyGo.transform.parent = groundPlane.transform;
@@ -243,7 +237,6 @@ namespace Assets.Scripts.Controllers
 			MeshFilter filter = emptyGo.AddComponent(typeof(MeshFilter)) as MeshFilter;
 			filter.mesh = msh;
 
-			// calculate area
 			surfaceArea = CalculateSurfaceArea(msh);
 			debugText.text += surfaceArea > 1 ? $"SURFACE: {Math.Round(surfaceArea, 2)} sq. mts." : $"SURFACE: {Math.Round(surfaceArea, 2) * 100} sq. cms.";
 		}
@@ -264,11 +257,7 @@ namespace Assets.Scripts.Controllers
 
 		public void InitializeDefaultScene()
 		{
-			try
-			{
-				ShowSurfaceLoading();
-			}
-			catch (Exception) { }
+			ShowSurfaceLoading();
 		}
 
 		public void OnContentPlaced()
@@ -281,37 +270,25 @@ namespace Assets.Scripts.Controllers
 				ShowAddMarkerButton();
 				ShowFinishButton();
 			}
-			catch (Exception) { }
+			catch (Exception ex) { debugText.text = $"{ex.Message}"; }
 		}
 
 		private void ShowFinishButton()
 		{
-			try
-			{
-				var button = GameObject.Find("FinishButton");
-				button.GetComponent<Animator>().SetBool("isShown", true);
-			}
-			catch (Exception) { }
+			var button = GameObject.Find("FinishButton");
+			button.GetComponent<Animator>().SetBool("isShown", true);
 		}
 
 		private void HideFinishButton()
 		{
-			try
-			{
-				var button = GameObject.Find("FinishButton");
-				button.GetComponent<Animator>().SetBool("isShown", false);
-			}
-			catch (Exception) { }
+			var button = GameObject.Find("FinishButton");
+			button.GetComponent<Animator>().SetBool("isShown", false);
 		}
 
 		public void ProcessHitTestResult(HitTestResult result)
 		{
-			try
-			{
-				HideSurfaceLoading();
-				ShowTapScreenToolTip();
-			}
-			catch (Exception) { }
+			HideSurfaceLoading();
+			ShowTapScreenToolTip();
 		}
 
 		private void DisableStagePlacement()
@@ -321,69 +298,41 @@ namespace Assets.Scripts.Controllers
 
 		public void ShowSurfaceLoading()
 		{
-			try
-			{
-				loading.GetComponent<Animator>().SetBool("isLoading", true);
-			}
-			catch (Exception) { }
+			loading.GetComponent<Animator>().SetBool("isLoading", true);
 		}
 
 		public void HideSurfaceLoading()
 		{
-			try
-			{
-				loading.GetComponent<Animator>().SetBool("isLoading", false);
-			}
-			catch (Exception) { }
+			loading.GetComponent<Animator>().SetBool("isLoading", false);
 		}
 
 		public void ShowTapScreenToolTip()
 		{
-			try
-			{
-				toolTip.GetComponent<Animator>().SetBool("isShown", true);
-			}
-			catch (Exception) { }
+			toolTip.GetComponent<Animator>().SetBool("isShown", true);
 		}
 
 		public void HideTapScreenToolTip()
 		{
-			try
-			{
-				toolTip.GetComponent<Animator>().SetBool("isShown", false);
-			}
-			catch (Exception) { }
+			toolTip.GetComponent<Animator>().SetBool("isShown", false);
 		}
 
 		public void ShowAddMarkerButton()
 		{
-			try
-			{
-				var button = GameObject.Find("AddMarkerButton");
-				button.GetComponent<Animator>().SetBool("isShown", true);
-			}
-			catch (Exception) { }
+			var button = GameObject.Find("AddMarkerButton");
+			button.GetComponent<Animator>().SetBool("isShown", true);
 		}
 
 		public void HideAddMarkerButton()
 		{
-			try
-			{
-				var button = GameObject.Find("AddMarkerButton");
-				button.GetComponent<Animator>().SetBool("isShown", false);
-			}
-			catch (Exception) { }
+			var button = GameObject.Find("AddMarkerButton");
+			button.GetComponent<Animator>().SetBool("isShown", false);
 		}
 
 		private void SetUpCurrentItem()
 		{
-			try
-			{
-				CurrentMarker.transform.parent = groundPlane.transform;
-				CurrentMarker.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
-				CurrentMarker.transform.localScale = CurrentMarker.transform.lossyScale;
-			}
-			catch (Exception ex) { }
+			CurrentMarker.transform.parent = groundPlane.transform;
+			CurrentMarker.transform.position = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
+			CurrentMarker.transform.localScale = CurrentMarker.transform.lossyScale;
 		}
 	}
 }
