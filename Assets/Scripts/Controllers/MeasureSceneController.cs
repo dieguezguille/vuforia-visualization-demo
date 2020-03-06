@@ -27,7 +27,6 @@ namespace Assets.Scripts.Controllers
 		private GameObject segmentLine;
 		//
 		private bool shouldUpdateMetrics = false;
-		private Color lineRendererMaterial;
 		private Material surfaceAreaMaterial;
 		private float surfaceArea;
 
@@ -55,10 +54,9 @@ namespace Assets.Scripts.Controllers
 				toolTip = GameObject.Find("TapScreenToolTip");
 				groundPlane = GameObject.Find("Ground Plane Stage");
 				planeFinder = GameObject.Find("Plane Finder");
-				MarkerList = new List<Marker>();
-				lineRendererMaterial = Color.red;
 				surfaceAreaMaterial = Resources.Load("Materials/SurfaceArea") as Material;
 				segmentLine = Resources.Load("Prefabs/SegmentLine") as GameObject;
+				MarkerList = new List<Marker>();
 			}
 			catch (Exception ex) { }
 		}
@@ -79,23 +77,32 @@ namespace Assets.Scripts.Controllers
 		{
 			try
 			{
+				// create line
 				var line = Instantiate(segmentLine);
 				line.transform.parent = groundPlane.transform;
 
 				Vector3 between = finalPos - initialPos;
 				float distance = between.magnitude;
 				line.transform.localScale = new Vector3(0.01f, 0.01f, distance);
-				Vector3 pos = initialPos + (between / 2);
+				var pos = initialPos + (between / 2);
 				line.transform.position = pos;
 				line.transform.LookAt(finalPos);
 
-				// TODO: CREATE TEXT OVER LINE
+				// 3create 3d text
+				GameObject textGo = new GameObject();
+				textGo.name = "SegmentLineText";
+				textGo.transform.parent = groundPlane.transform;
+				textGo.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
+				textGo.transform.position = pos;
 
-				//
+				TextMesh textMesh = textGo.AddComponent(typeof(TextMesh)) as TextMesh;
+				textMesh.text = distance > 1 ? $"{Math.Round(distance, 2)} mts." : $"{Math.Round(distance, 2) * 100} cms.";
+				textMesh.fontSize = 14;
+				textMesh.alignment = TextAlignment.Center;
+				textMesh.anchor = TextAnchor.MiddleCenter;
+				textMesh.transform.position = new Vector3(pos.x, pos.y + 0.05f, pos.z);
 
-				//
-
-				//
+				FaceCameraBehaviour faceCameraBehaviour = textGo.AddComponent(typeof(FaceCameraBehaviour)) as FaceCameraBehaviour;
 			}
 			catch (Exception ex)
 			{
@@ -117,7 +124,7 @@ namespace Assets.Scripts.Controllers
 				perimeterDistance += dist;
 			}
 
-			debugText.text = perimeterDistance > 1 ? $"TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $" TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
+			debugText.text = perimeterDistance > 1 ? $"TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $"TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
 
 			//angle
 			//var from = CurrentMarker.transform.position - PreviousMarker.transform.position;
@@ -238,7 +245,7 @@ namespace Assets.Scripts.Controllers
 
 			// calculate area
 			surfaceArea = CalculateSurfaceArea(msh);
-			debugText.text += surfaceArea > 1 ? $" SURFACE: {Math.Round(surfaceArea, 2)} sq. mts." : $" SURFACE: {Math.Round(surfaceArea, 2) * 100} sq. cms.";
+			debugText.text += surfaceArea > 1 ? $"SURFACE: {Math.Round(surfaceArea, 2)} sq. mts." : $"SURFACE: {Math.Round(surfaceArea, 2) * 100} sq. cms.";
 		}
 
 		private float CalculateSurfaceArea(Mesh m)
