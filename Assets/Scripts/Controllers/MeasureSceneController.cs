@@ -129,7 +129,7 @@ namespace Assets.Scripts.Controllers
 				perimeterDistance += dist;
 			}
 
-			debugText.text = perimeterDistance > 1 ? $"TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $"TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
+			debugText.text = perimeterDistance > 1 ? $"\n TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $"\n TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
 
 			//angle
 			//var from = CurrentMarker.transform.position - PreviousMarker.transform.position;
@@ -226,7 +226,7 @@ namespace Assets.Scripts.Controllers
 			uiCanvas.alpha = 1;
 			backgroundPlane.SetActive(true);
 			planeFinder.SetActive(true);
-			debugText.text += "Screenshot taken.";
+			debugText.text += "\n Screenshot taken.";
 		}
 
 		private void CreateMesh()
@@ -268,7 +268,7 @@ namespace Assets.Scripts.Controllers
 			filter.mesh = msh;
 
 			surfaceArea = CalculateSurfaceArea(msh);
-			debugText.text += surfaceArea > 1 ? $"SURFACE: {Math.Round(surfaceArea, 2)} sq. mts." : $"SURFACE: {Math.Round(surfaceArea, 2) * 100} sq. cms.";
+			debugText.text += surfaceArea > 1 ? $"\n SURFACE: {Math.Round(surfaceArea, 2)} sq. mts." : $"\n SURFACE: {Math.Round(surfaceArea, 2) * 100} sq. cms.";
 		}
 
 		private float CalculateSurfaceArea(Mesh m)
