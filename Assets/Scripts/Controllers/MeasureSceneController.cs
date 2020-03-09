@@ -24,16 +24,17 @@ namespace Assets.Scripts.Controllers
 		[SerializeField]
 		private GameObject toolTip;
 		[SerializeField]
-		private CanvasGroup uiCanvas;
+		private CanvasGroup uiWrapper;
 		[SerializeField]
-		private Toggle backgroundToggle;
+		private Toggle cameraOnlyToggle;
+		[SerializeField]
+		private GameObject uiCanvas;
 		// VUFORIA
 		private GameObject currentMarker;
 		private GameObject PreviousMarker;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
 		private GameObject segmentLine;
-		private GameObject backgroundPlane;
 		// VARS
 		private bool shouldUpdateMetrics = false;
 		private Material surfaceAreaMaterial;
@@ -208,9 +209,9 @@ namespace Assets.Scripts.Controllers
 		{
 			try
 			{
-				backgroundPlane = GameObject.Find("BackgroundPlane");
-				backgroundPlane.SetActive(backgroundToggle.isOn);
-				uiCanvas.alpha = 0;
+				uiWrapper.alpha = 0;
+				groundPlane.SetActive(!cameraOnlyToggle.isOn);
+				uiCanvas.SetActive(!cameraOnlyToggle.isOn);
 				planeFinder.SetActive(false);
 
 				NativeToolkit.SaveScreenshot($"Screenshot_{DateTime.Now}");
@@ -223,10 +224,10 @@ namespace Assets.Scripts.Controllers
 
 		private void NativeToolkit_OnScreenshotSaved(string path)
 		{
-			uiCanvas.alpha = 1;
-			backgroundPlane.SetActive(true);
+			uiWrapper.alpha = 1;
+			groundPlane.SetActive(true);
+			uiCanvas.SetActive(true);
 			planeFinder.SetActive(true);
-			debugText.text += "\n Screenshot taken.";
 		}
 
 		private void CreateMesh()
