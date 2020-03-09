@@ -61,6 +61,7 @@ namespace Assets.Scripts.Controllers
 				surfaceAreaMaterial = Resources.Load("Materials/SurfaceArea") as Material;
 				segmentLine = Resources.Load("Prefabs/SegmentLine") as GameObject;
 				MarkerList = new List<Marker>();
+				NativeToolkit.OnScreenshotSaved += NativeToolkit_OnScreenshotSaved;
 			}
 			catch (Exception ex) { debugText.text = $"{ex.Message}"; }
 		}
@@ -190,11 +191,33 @@ namespace Assets.Scripts.Controllers
 
 				MarkerList.Add(lastMarker);
 				CreateMesh();
+				TakeScreenshots();
 			}
 			catch (Exception ex)
 			{
 				debugText.text = ex.Message;
 			}
+		}
+
+		private void TakeScreenshots()
+		{
+			try
+			{
+				// disable UI canvas temporarily
+				// take screenshot
+				NativeToolkit.SaveScreenshot($"Screenshot_{DateTime.Now}");
+				// disable camera background
+				// take another screenshot
+			}
+			catch (Exception e)
+			{
+				debugText.text = e.Message;
+			}
+		}
+
+		private void NativeToolkit_OnScreenshotSaved(string path)
+		{
+			debugText.text += "\n" + "Screenshot saved to: " + path;
 		}
 
 		private void CreateMesh()
