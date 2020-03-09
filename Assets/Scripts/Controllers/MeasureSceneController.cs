@@ -19,10 +19,14 @@ namespace Assets.Scripts.Controllers
 		public Text debugText;
 		public Camera arCamera;
 		// UI
+		[SerializeField]
 		private GameObject loading;
+		[SerializeField]
 		private GameObject toolTip;
 		[SerializeField]
 		private CanvasGroup uiCanvas;
+		[SerializeField]
+		private Toggle backgroundToggle;
 		// VUFORIA
 		private GameObject currentMarker;
 		private GameObject PreviousMarker;
@@ -34,7 +38,6 @@ namespace Assets.Scripts.Controllers
 		private bool shouldUpdateMetrics = false;
 		private Material surfaceAreaMaterial;
 		private float surfaceArea;
-		private bool isTakingScreenshot = false;
 		#endregion
 
 		#region Properties
@@ -59,8 +62,6 @@ namespace Assets.Scripts.Controllers
 		{
 			try
 			{
-				loading = GameObject.Find("Loading");
-				toolTip = GameObject.Find("TapScreenToolTip");
 				groundPlane = GameObject.Find("Ground Plane Stage");
 				planeFinder = GameObject.Find("Plane Finder");
 				surfaceAreaMaterial = Resources.Load("Materials/SurfaceArea") as Material;
@@ -203,14 +204,14 @@ namespace Assets.Scripts.Controllers
 			}
 		}
 
-		private void TakeScreenshot(bool backgroundEnabled = true)
+		public void TakeScreenshot()
 		{
 			try
 			{
-				isTakingScreenshot = true;
 				backgroundPlane = GameObject.Find("BackgroundPlane");
-				backgroundPlane.SetActive(backgroundEnabled);
+				backgroundPlane.SetActive(backgroundToggle.isOn);
 				uiCanvas.alpha = 0;
+				planeFinder.SetActive(false);
 
 				NativeToolkit.SaveScreenshot($"Screenshot_{DateTime.Now}");
 			}
@@ -224,8 +225,8 @@ namespace Assets.Scripts.Controllers
 		{
 			uiCanvas.alpha = 1;
 			backgroundPlane.SetActive(true);
+			planeFinder.SetActive(true);
 			debugText.text += "Screenshot taken.";
-			isTakingScreenshot = false;
 		}
 
 		private void CreateMesh()
