@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -20,16 +21,20 @@ namespace Assets.Scripts.Controllers
 		// UI
 		private GameObject loading;
 		private GameObject toolTip;
+		[SerializeField]
+		private CanvasGroup uiCanvas;
 		// VUFORIA
 		private GameObject currentMarker;
 		private GameObject PreviousMarker;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
 		private GameObject segmentLine;
+		private GameObject backgroundPlane;
 		// VARS
 		private bool shouldUpdateMetrics = false;
 		private Material surfaceAreaMaterial;
 		private float surfaceArea;
+		private bool isTakingScreenshot = false;
 		#endregion
 
 		#region Properties
@@ -191,7 +196,6 @@ namespace Assets.Scripts.Controllers
 
 				MarkerList.Add(lastMarker);
 				CreateMesh();
-				TakeScreenshots();
 			}
 			catch (Exception ex)
 			{
@@ -199,15 +203,16 @@ namespace Assets.Scripts.Controllers
 			}
 		}
 
-		private void TakeScreenshots()
+		private void TakeScreenshot(bool backgroundEnabled = true)
 		{
 			try
 			{
-				// disable UI canvas temporarily
-				// take screenshot
+				isTakingScreenshot = true;
+				backgroundPlane = GameObject.Find("BackgroundPlane");
+				backgroundPlane.SetActive(backgroundEnabled);
+				uiCanvas.alpha = 0;
+
 				NativeToolkit.SaveScreenshot($"Screenshot_{DateTime.Now}");
-				// disable camera background
-				// take another screenshot
 			}
 			catch (Exception e)
 			{
@@ -217,7 +222,10 @@ namespace Assets.Scripts.Controllers
 
 		private void NativeToolkit_OnScreenshotSaved(string path)
 		{
-			debugText.text += "\n" + "Screenshot saved to: " + path;
+			uiCanvas.alpha = 1;
+			backgroundPlane.SetActive(true);
+			debugText.text += "Screenshot taken.";
+			isTakingScreenshot = false;
 		}
 
 		private void CreateMesh()

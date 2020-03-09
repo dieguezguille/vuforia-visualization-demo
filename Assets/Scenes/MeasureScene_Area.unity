@@ -400,6 +400,7 @@ GameObject:
   - component: {fileID: 265746597}
   - component: {fileID: 265746596}
   - component: {fileID: 265746600}
+  - component: {fileID: 265746599}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -493,6 +494,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!225 &265746599
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265746594}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!222 &265746600
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1406,6 +1419,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugText: {fileID: 114867511}
   arCamera: {fileID: 170911404}
+  uiCanvas: {fileID: 265746599}
 --- !u!1 &949801345
 GameObject:
   m_ObjectHideFlags: 0
