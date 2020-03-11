@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -264,6 +263,10 @@ namespace Assets.Scripts.Controllers
 			meshRenderer.material = surfaceAreaMaterial;
 			meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			meshRenderer.receiveShadows = false;
+
+			RippleState rippleState = emptyGo.AddComponent(typeof(RippleState)) as RippleState;
+			//rippleState.speed = 0.4f;
+			//rippleState.enabled = true;
 
 			MeshFilter filter = emptyGo.AddComponent(typeof(MeshFilter)) as MeshFilter;
 			filter.mesh = msh;
