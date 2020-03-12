@@ -33,12 +33,14 @@ namespace Assets.Scripts.Controllers
 		private GameObject PreviousMarker;
 		private GameObject groundPlane;
 		private GameObject planeFinder;
-		private GameObject segmentLine;
+		private GameObject segmentLinePrefab;
+		private GameObject movingSegmentLine;
 		// VARS
 		private bool shouldUpdateMetrics = false;
 		private Material surfaceAreaMaterial;
 		private float surfaceArea;
 		private float perimeterDistance;
+		private bool shouldUpdateMovingSegmentLine = false;
 		#endregion
 
 		#region Properties
@@ -66,9 +68,14 @@ namespace Assets.Scripts.Controllers
 				groundPlane = GameObject.Find("Ground Plane Stage");
 				planeFinder = GameObject.Find("Plane Finder");
 				surfaceAreaMaterial = Resources.Load("Materials/SurfaceArea") as Material;
-				segmentLine = Resources.Load("Prefabs/SegmentLine") as GameObject;
+				segmentLinePrefab = Resources.Load("Prefabs/SegmentLine") as GameObject;
 				MarkerList = new List<Marker>();
 				NativeToolkit.OnScreenshotSaved += NativeToolkit_OnScreenshotSaved;
+
+				// moving segment line
+				movingSegmentLine = Instantiate(segmentLinePrefab);
+				movingSegmentLine.transform.parent = groundPlane.transform;
+				movingSegmentLine.SetActive(false);
 			}
 			catch (Exception ex) { debugText.text = $"{ex.Message}"; }
 		}
@@ -83,13 +90,25 @@ namespace Assets.Scripts.Controllers
 			{
 				StopCoroutine(UpdateMetrics());
 			}
+
+			if (shouldUpdateMovingSegmentLine)
+			{
+				movingSegmentLine.SetActive(true);
+				StartCoroutine(UpdateMovingSegmentLine());
+			}
+			else
+			{
+				movingSegmentLine.SetActive(false);
+				StopCoroutine(UpdateMovingSegmentLine());
+			}
 		}
 
-		private void CreateSegmentLine(Vector3 initialPos, Vector3 finalPos)
+		private void BuildSegmentLine(Vector3 initialPos, Vector3 finalPos)
 		{
 			try
 			{
-				var line = Instantiate(segmentLine);
+				// segment line
+				var line = Instantiate(segmentLinePrefab);
 				line.transform.parent = groundPlane.transform;
 
 				Vector3 between = finalPos - initialPos;
@@ -99,6 +118,7 @@ namespace Assets.Scripts.Controllers
 				line.transform.position = pos;
 				line.transform.LookAt(finalPos);
 
+				// text over line
 				GameObject textGo = new GameObject();
 				textGo.name = "SegmentLineText";
 				textGo.transform.parent = groundPlane.transform;
@@ -153,6 +173,22 @@ namespace Assets.Scripts.Controllers
 			yield return new WaitForSeconds(.1f);
 		}
 
+		IEnumerator UpdateMovingSegmentLine()
+		{
+			// segment line
+			var finalPos = planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition;
+			var initialPos = MarkerList.Last().Position;
+
+			Vector3 between = finalPos - initialPos;
+			float distance = between.magnitude;
+			movingSegmentLine.transform.localScale = new Vector3(0.01f, 0.01f, distance);
+			var pos = initialPos + (between / 2);
+			movingSegmentLine.transform.position = pos;
+			movingSegmentLine.transform.LookAt(finalPos);
+
+			yield return new WaitForSeconds(.1f);
+		}
+
 		public void ResetScene()
 		{
 			SceneManager.LoadScene("MeasureScene", LoadSceneMode.Single);
@@ -177,10 +213,11 @@ namespace Assets.Scripts.Controllers
 				};
 
 				MarkerList.Add(newMarker);
+				shouldUpdateMovingSegmentLine = true;
 
-				if (MarkerList != null && MarkerList.Count > 1)
+				if (MarkerList.Count > 1)
 				{
-					CreateSegmentLine(PreviousMarker.transform.position, CurrentMarker.transform.position);
+					BuildSegmentLine(PreviousMarker.transform.position, CurrentMarker.transform.position);
 				}
 
 				shouldUpdateMetrics = true;
@@ -196,6 +233,7 @@ namespace Assets.Scripts.Controllers
 			try
 			{
 				shouldUpdateMetrics = false;
+				shouldUpdateMovingSegmentLine = false;
 
 				var lastMarker = new Marker()
 				{
@@ -209,7 +247,8 @@ namespace Assets.Scripts.Controllers
 				perimeterDistance += Vector3.Distance(finalPos, initialPos);
 				debugText.text = perimeterDistance > 1 ? $"\n TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $"\n TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
 
-				CreateSegmentLine(initialPos, finalPos);
+				BuildSegmentLine(initialPos, finalPos);
+				movingSegmentLine.SetActive(false);
 
 				MarkerList.Add(lastMarker);
 				CreateMesh();
