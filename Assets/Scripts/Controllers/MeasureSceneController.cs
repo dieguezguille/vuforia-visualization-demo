@@ -75,7 +75,7 @@ namespace Assets.Scripts.Controllers
 
 		void Update()
 		{
-			if (shouldUpdateMetrics && MarkerList != null && MarkerList.Count > 1)
+			if (shouldUpdateMetrics)
 			{
 				StartCoroutine(UpdateMetrics());
 			}
@@ -125,19 +125,22 @@ namespace Assets.Scripts.Controllers
 			// total distance
 			perimeterDistance = 0.0f;
 
-			foreach (var marker in MarkerList)
+			if (MarkerList != null && MarkerList.Count > 1)
 			{
-				var dist = marker.LastSegmentDistance;
-				perimeterDistance += dist;
+				foreach (var marker in MarkerList)
+				{
+					var dist = marker.LastSegmentDistance;
+					perimeterDistance += dist;
+				}
 			}
 
 			debugText.text = perimeterDistance > 1 ? $"\n TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $"\n TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
 
 			// last segment distance
-			if (MarkerList.Count > 1)
+			if (MarkerList != null && MarkerList.Count > 0)
 			{
-				var distance = Vector3.Distance(planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition, MarkerList.Last().Position);
-				debugText.text += distance > 1 ? $"\n CURRENT: {Math.Round(distance, 2)} mts." : $"\n CURRENT: {Math.Round(distance, 2) * 100} cms.";
+				var dist = Vector3.Distance(planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition, MarkerList.Last().Position);
+				debugText.text += dist > 1 ? $"\n CURRENT: {Math.Round(dist, 2)} mts." : $"\n CURRENT: {Math.Round(dist, 2) * 100} cms.";
 			}
 
 			//angle
