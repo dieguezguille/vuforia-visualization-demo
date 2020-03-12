@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(RippleState))]
+[RequireComponent(typeof(RippleShaderBehaviour))]
 public class RippleFxSwitcher : MonoBehaviour
 {
 	public Gradient baseAlbedo;
@@ -8,7 +8,7 @@ public class RippleFxSwitcher : MonoBehaviour
 	public Gradient waveColor;
 	public float switchSpeed = 5;
 
-	RippleState rippleState;
+	RippleShaderBehaviour rippleState;
 	float parameter;
 	float target;
 
@@ -20,7 +20,7 @@ public class RippleFxSwitcher : MonoBehaviour
 
 	void Awake()
 	{
-		rippleState = GetComponent<RippleState>();
+		rippleState = GetComponent<RippleShaderBehaviour>();
 	}
 
 	void Update()

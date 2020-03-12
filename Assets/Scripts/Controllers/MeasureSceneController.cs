@@ -133,6 +133,13 @@ namespace Assets.Scripts.Controllers
 
 			debugText.text = perimeterDistance > 1 ? $"\n TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $"\n TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
 
+			// last segment distance
+			if (MarkerList.Count > 1)
+			{
+				var distance = Vector3.Distance(planeFinder.GetComponent<PlaneFinderBehaviour>().PlaneIndicator.transform.localPosition, MarkerList.Last().Position);
+				debugText.text += distance > 1 ? $"\n CURRENT: {Math.Round(distance, 2)} mts." : $"\n CURRENT: {Math.Round(distance, 2) * 100} cms.";
+			}
+
 			//angle
 			//var from = CurrentMarker.transform.position - PreviousMarker.transform.position;
 			//var to = Vector3.ProjectOnPlane(from, -CurrentMarker.transform.up);
@@ -270,9 +277,7 @@ namespace Assets.Scripts.Controllers
 			meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			meshRenderer.receiveShadows = false;
 
-			RippleState rippleState = emptyGo.AddComponent(typeof(RippleState)) as RippleState;
-			//rippleState.speed = 0.4f;
-			//rippleState.enabled = true;
+			RippleShaderBehaviour rippleBehaviour = emptyGo.AddComponent(typeof(RippleShaderBehaviour)) as RippleShaderBehaviour;
 
 			MeshFilter filter = emptyGo.AddComponent(typeof(MeshFilter)) as MeshFilter;
 			filter.mesh = msh;
@@ -312,7 +317,6 @@ namespace Assets.Scripts.Controllers
 			}
 			catch (Exception ex) { debugText.text = $"{ex.Message}"; }
 		}
-
 
 		public void ProcessHitTestResult(HitTestResult result)
 		{

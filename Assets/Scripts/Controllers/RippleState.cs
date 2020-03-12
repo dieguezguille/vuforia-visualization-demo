@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class RippleState : MonoBehaviour
+public class RippleShaderBehaviour : MonoBehaviour
 {
 	// Sonar mode (directional or spherical)
 	public enum SonarMode { Directional, Spherical }
