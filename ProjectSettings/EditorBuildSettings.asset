@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MeasureScene.unity
     guid: f1ed38b6b45933449a4c1cb35730d1ab
   - enabled: 1
-    path: Assets/Scenes/MeasureScene_Area.unity
+    path: Assets/Scenes/MeasureScene.unity
     guid: 9b8cd02fc7cc3024eb00fa240db41635
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 203f87f54b3d2ea4ca2bcd23c55a85f4,

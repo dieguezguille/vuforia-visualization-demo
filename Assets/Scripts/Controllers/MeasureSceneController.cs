@@ -38,6 +38,7 @@ namespace Assets.Scripts.Controllers
 		private bool shouldUpdateMetrics = false;
 		private Material surfaceAreaMaterial;
 		private float surfaceArea;
+		private float perimeterDistance;
 		#endregion
 
 		#region Properties
@@ -122,7 +123,8 @@ namespace Assets.Scripts.Controllers
 		IEnumerator UpdateMetrics()
 		{
 			// total distance
-			var perimeterDistance = 0.0f;
+			perimeterDistance = 0.0f;
+
 			foreach (var marker in MarkerList)
 			{
 				var dist = marker.LastSegmentDistance;
@@ -143,7 +145,7 @@ namespace Assets.Scripts.Controllers
 
 		public void ResetScene()
 		{
-			SceneManager.LoadScene("MeasureScene_Area", LoadSceneMode.Single);
+			SceneManager.LoadScene("MeasureScene", LoadSceneMode.Single);
 		}
 
 		public void GoMainMenu()
@@ -193,6 +195,10 @@ namespace Assets.Scripts.Controllers
 
 				Vector3 initialPos = MarkerList.Last().Position;
 				Vector3 finalPos = MarkerList.First().Position;
+
+				perimeterDistance += Vector3.Distance(finalPos, initialPos);
+				debugText.text = perimeterDistance > 1 ? $"\n TOTAL: {Math.Round(perimeterDistance, 2)} mts." : $"\n TOTAL: {Math.Round(perimeterDistance, 2) * 100} cms.";
+
 				CreateSegmentLine(initialPos, finalPos);
 
 				MarkerList.Add(lastMarker);
