@@ -210,9 +210,9 @@ Material:
     - _SPECULAR_COLOR: {r: 1, g: 1, b: 1, a: 0}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SonarAddColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SonarBaseColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SonarWaveColor: {r: 0, g: 1, b: 0.071077585, a: 1}
-    - _SonarWaveParams: {r: 1, g: 3, b: 1, a: 1}
+    - _SonarBaseColor: {r: 0, g: 0.6132076, b: 0.25490203, a: 1}
+    - _SonarWaveColor: {r: 0.15789485, g: 1, b: 0, a: 1}
+    - _SonarWaveParams: {r: 3, g: 71.99, b: 1, a: 1}
     - _SonarWaveVector: {r: 0, g: 0, b: 1, a: 0}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _Tint: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}

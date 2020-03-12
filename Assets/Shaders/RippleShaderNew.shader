@@ -32,11 +32,11 @@ Shader "Custom/RippleShaderNew"
 	}
 		SubShader
 	{
-		Tags { "RenderType" = "Transparent" }
+		Tags {"Queue" = "Transparent" "RenderType" = "Transparent" }
 
 		CGPROGRAM
 
-		#pragma surface surf Lambert
+		#pragma surface surf Lambert 
 		#pragma multi_compile SONAR_DIRECTIONAL SONAR_SPHERICAL
 
 		struct Input
