@@ -63,6 +63,8 @@ namespace Assets.Scripts.Controllers
 
 		void Start()
 		{
+			Screen.orientation = ScreenOrientation.Portrait;
+
 			try
 			{
 				groundPlane = GameObject.Find("Ground Plane Stage");

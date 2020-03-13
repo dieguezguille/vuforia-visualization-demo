@@ -43,6 +43,8 @@ namespace Assets.Scripts.Controllers
 
 		private void Start()
 		{
+			Screen.orientation = ScreenOrientation.Portrait;
+
 			try
 			{
 				modelController = GameObject.Find("ModelController").GetComponent<ModelController>();

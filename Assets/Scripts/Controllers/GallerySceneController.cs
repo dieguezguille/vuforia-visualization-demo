@@ -17,7 +17,7 @@ public class GallerySceneController : MonoBehaviour
 
 	void Start()
 	{
-		Screen.orientation = ScreenOrientation.Landscape;
+		Screen.orientation = ScreenOrientation.Portrait;
 
 		files = Directory.GetFiles(Application.persistentDataPath + "/", "*.png");
 		if (files.Length > 0)
