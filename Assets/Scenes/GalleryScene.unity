@@ -450,7 +450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1071,7 +1071,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f11513e26ce71944bbc0a58c6c94f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 784702167}
+  image: {fileID: 784702167}
 --- !u!1 &1993083000
 GameObject:
   m_ObjectHideFlags: 0

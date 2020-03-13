@@ -275,7 +275,7 @@ namespace Assets.Scripts.Controllers
 				uiCanvas.SetActive(!cameraOnlyToggle.isOn);
 				planeFinder.SetActive(false);
 
-				NativeToolkit.SaveScreenshot($"Screenshot_{DateTime.Now}");
+				NativeToolkit.SaveScreenshot($"Screenshot");
 			}
 			catch (Exception e)
 			{

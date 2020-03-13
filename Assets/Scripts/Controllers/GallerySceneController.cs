@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GallerySceneController : MonoBehaviour
 {
 	[SerializeField]
-	GameObject canvas;
+	GameObject image;
 	string[] files = null;
 	int whichScreenShotIsShown = 0;
 
@@ -19,7 +19,7 @@ public class GallerySceneController : MonoBehaviour
 	{
 		Screen.orientation = ScreenOrientation.Portrait;
 
-		files = Directory.GetFiles(Application.persistentDataPath + "/", "*.png");
+		files = Directory.GetFiles(Application.persistentDataPath + "/MyScreenshots/", "*.jpg");
 		if (files.Length > 0)
 		{
 			GetPictureAndShowIt();
@@ -32,7 +32,7 @@ public class GallerySceneController : MonoBehaviour
 		Texture2D texture = GetScreenshotImage(pathToFile);
 		Sprite sp = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
 			new Vector2(0.5f, 0.5f));
-		canvas.GetComponent<Image>().sprite = sp;
+		image.GetComponent<Image>().sprite = sp;
 	}
 
 	Texture2D GetScreenshotImage(string filePath)
