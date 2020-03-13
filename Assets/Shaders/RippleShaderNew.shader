@@ -36,7 +36,7 @@ Shader "Custom/RippleShaderNew"
 
 		CGPROGRAM
 
-		#pragma surface surf Lambert 
+		#pragma surface surf Lambert alpha
 		#pragma multi_compile SONAR_DIRECTIONAL SONAR_SPHERICAL
 
 		struct Input
@@ -75,6 +75,7 @@ Shader "Custom/RippleShaderNew"
 			// Apply to the surface.
 			o.Albedo = _SonarBaseColor;
 			o.Emission = _SonarWaveColor * w + _SonarAddColor;
+			o.Alpha = 0.6;
 		}
 
 		ENDCG
