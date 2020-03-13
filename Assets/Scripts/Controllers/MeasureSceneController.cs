@@ -199,6 +199,11 @@ namespace Assets.Scripts.Controllers
 			SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
 		}
 
+		public void GoGalleryScene()
+		{
+			SceneManager.LoadScene("GalleryScene", LoadSceneMode.Single);
+		}
+
 		public void CreateMarker()
 		{
 			try
